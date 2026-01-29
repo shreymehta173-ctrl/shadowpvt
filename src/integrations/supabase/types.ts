@@ -1,0 +1,711 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  public: {
+    Tables: {
+      concepts: {
+        Row: {
+          created_at: string
+          description: string | null
+          difficulty: number | null
+          id: string
+          name: string
+          prerequisites: string[] | null
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          difficulty?: number | null
+          id?: string
+          name: string
+          prerequisites?: string[] | null
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          difficulty?: number | null
+          id?: string
+          name?: string
+          prerequisites?: string[] | null
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concepts_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostic_responses: {
+        Row: {
+          attempt_number: number | null
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          session_id: string
+          student_answer: string | null
+          time_taken: number
+        }
+        Insert: {
+          attempt_number?: number | null
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          session_id: string
+          student_answer?: string | null
+          time_taken: number
+        }
+        Update: {
+          attempt_number?: number | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          session_id?: string
+          student_answer?: string | null
+          time_taken?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostic_sessions: {
+        Row: {
+          average_time_per_question: number | null
+          completed_at: string | null
+          correct_answers: number | null
+          id: string
+          started_at: string
+          status: string | null
+          student_id: string
+          topic_id: string | null
+          total_questions: number | null
+        }
+        Insert: {
+          average_time_per_question?: number | null
+          completed_at?: string | null
+          correct_answers?: number | null
+          id?: string
+          started_at?: string
+          status?: string | null
+          student_id: string
+          topic_id?: string | null
+          total_questions?: number | null
+        }
+        Update: {
+          average_time_per_question?: number | null
+          completed_at?: string | null
+          correct_answers?: number | null
+          id?: string
+          started_at?: string
+          status?: string | null
+          student_id?: string
+          topic_id?: string | null
+          total_questions?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_sessions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_sessions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      improvement_plans: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          estimated_duration: number | null
+          gap_id: string | null
+          id: string
+          practice_type: string | null
+          priority: number | null
+          recommended_resources: Json | null
+          skill_id: string | null
+          status: string | null
+          student_id: string
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_duration?: number | null
+          gap_id?: string | null
+          id?: string
+          practice_type?: string | null
+          priority?: number | null
+          recommended_resources?: Json | null
+          skill_id?: string | null
+          status?: string | null
+          student_id: string
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_duration?: number | null
+          gap_id?: string | null
+          id?: string
+          practice_type?: string | null
+          priority?: number | null
+          recommended_resources?: Json | null
+          skill_id?: string | null
+          status?: string | null
+          student_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "improvement_plans_gap_id_fkey"
+            columns: ["gap_id"]
+            isOneToOne: false
+            referencedRelation: "learning_gaps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "improvement_plans_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "improvement_plans_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_gaps: {
+        Row: {
+          concept_id: string | null
+          confidence_score: number | null
+          details: Json | null
+          id: string
+          identified_at: string
+          resolved_at: string | null
+          session_id: string | null
+          severity: Database["public"]["Enums"]["gap_severity"]
+          skill_id: string | null
+          student_id: string
+          topic_id: string | null
+        }
+        Insert: {
+          concept_id?: string | null
+          confidence_score?: number | null
+          details?: Json | null
+          id?: string
+          identified_at?: string
+          resolved_at?: string | null
+          session_id?: string | null
+          severity?: Database["public"]["Enums"]["gap_severity"]
+          skill_id?: string | null
+          student_id: string
+          topic_id?: string | null
+        }
+        Update: {
+          concept_id?: string | null
+          confidence_score?: number | null
+          details?: Json | null
+          id?: string
+          identified_at?: string
+          resolved_at?: string | null
+          session_id?: string | null
+          severity?: Database["public"]["Enums"]["gap_severity"]
+          skill_id?: string | null
+          student_id?: string
+          topic_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_gaps_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_gaps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_gaps_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_gaps_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_gaps_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      progress_history: {
+        Row: {
+          id: string
+          recorded_at: string
+          score: number
+          session_id: string | null
+          skill_id: string | null
+          student_id: string
+        }
+        Insert: {
+          id?: string
+          recorded_at?: string
+          score: number
+          session_id?: string | null
+          skill_id?: string | null
+          student_id: string
+        }
+        Update: {
+          id?: string
+          recorded_at?: string
+          score?: number
+          session_id?: string | null
+          skill_id?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "progress_history_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "progress_history_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "progress_history_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questions: {
+        Row: {
+          concept_id: string | null
+          correct_answer: string | null
+          created_at: string
+          difficulty: number | null
+          explanation: string | null
+          id: string
+          options: Json | null
+          question_text: string
+          question_type: string | null
+          skill_id: string | null
+          time_limit: number | null
+          topic_id: string
+        }
+        Insert: {
+          concept_id?: string | null
+          correct_answer?: string | null
+          created_at?: string
+          difficulty?: number | null
+          explanation?: string | null
+          id?: string
+          options?: Json | null
+          question_text: string
+          question_type?: string | null
+          skill_id?: string | null
+          time_limit?: number | null
+          topic_id: string
+        }
+        Update: {
+          concept_id?: string | null
+          correct_answer?: string | null
+          created_at?: string
+          difficulty?: number | null
+          explanation?: string | null
+          id?: string
+          options?: Json | null
+          question_text?: string
+          question_type?: string | null
+          skill_id?: string | null
+          time_limit?: number | null
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_progress: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          current_level: Database["public"]["Enums"]["skill_level"] | null
+          id: string
+          improvement_rate: number | null
+          last_assessed_at: string | null
+          previous_score: number | null
+          skill_id: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          current_level?: Database["public"]["Enums"]["skill_level"] | null
+          id?: string
+          improvement_rate?: number | null
+          last_assessed_at?: string | null
+          previous_score?: number | null
+          skill_id: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          current_level?: Database["public"]["Enums"]["skill_level"] | null
+          id?: string
+          improvement_rate?: number | null
+          last_assessed_at?: string | null
+          previous_score?: number | null
+          skill_id?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_progress_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_progress_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          career_relevance: number | null
+          concept_ids: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          career_relevance?: number | null
+          concept_ids?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          career_relevance?: number | null
+          concept_ids?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      student_profiles: {
+        Row: {
+          created_at: string
+          daily_study_time: number | null
+          display_name: string
+          grade: string | null
+          id: string
+          interests: string[] | null
+          learning_speed: Database["public"]["Enums"]["learning_speed"] | null
+          onboarding_completed: boolean | null
+          preferred_language: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_study_time?: number | null
+          display_name: string
+          grade?: string | null
+          id?: string
+          interests?: string[] | null
+          learning_speed?: Database["public"]["Enums"]["learning_speed"] | null
+          onboarding_completed?: boolean | null
+          preferred_language?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_study_time?: number | null
+          display_name?: string
+          grade?: string | null
+          id?: string
+          interests?: string[] | null
+          learning_speed?: Database["public"]["Enums"]["learning_speed"] | null
+          onboarding_completed?: boolean | null
+          preferred_language?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      topics: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      gap_severity: "critical" | "moderate" | "minor" | "none"
+      learning_speed: "slow" | "average" | "fast"
+      skill_level: "beginner" | "intermediate" | "advanced"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      gap_severity: ["critical", "moderate", "minor", "none"],
+      learning_speed: ["slow", "average", "fast"],
+      skill_level: ["beginner", "intermediate", "advanced"],
+    },
+  },
+} as const
