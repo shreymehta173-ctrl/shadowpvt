@@ -1,0 +1,10 @@
+project_id = "hrybchjkuyunvahqfmdh"
+
+[functions.learning-diagnostic-agent]
+verify_jwt = false
+
+[functions.skill-recommendation-agent]
+verify_jwt = false
+
+[functions.progress-tracking-agent]
+verify_jwt = false
