@@ -4,9 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
-  ClipboardCheck,
-  AlertTriangle,
-  Map,
   TrendingUp,
   LogOut,
   Brain,
@@ -18,11 +15,8 @@ import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Diagnostic Test', href: '/diagnostic', icon: ClipboardCheck },
-  { name: 'Gap Analysis', href: '/gaps', icon: AlertTriangle },
-  { name: 'Skill Roadmap', href: '/roadmap', icon: Map },
-  { name: 'Progress', href: '/progress', icon: TrendingUp },
   { name: 'Career Guidance', href: '/career', icon: Compass },
+  { name: 'Progress', href: '/progress', icon: TrendingUp },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
