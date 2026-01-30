@@ -14,6 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
+      career_chat_history: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+          student_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+          student_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_chat_history_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_recommendations: {
+        Row: {
+          ai_explanation: string | null
+          ai_roadmap: Json | null
+          career_id: string
+          gap_penalty_score: number | null
+          generated_at: string
+          id: string
+          interest_fit_score: number | null
+          language: string | null
+          match_score: number
+          skill_fit_score: number | null
+          student_id: string
+        }
+        Insert: {
+          ai_explanation?: string | null
+          ai_roadmap?: Json | null
+          career_id: string
+          gap_penalty_score?: number | null
+          generated_at?: string
+          id?: string
+          interest_fit_score?: number | null
+          language?: string | null
+          match_score?: number
+          skill_fit_score?: number | null
+          student_id: string
+        }
+        Update: {
+          ai_explanation?: string | null
+          ai_roadmap?: Json | null
+          career_id?: string
+          gap_penalty_score?: number | null
+          generated_at?: string
+          id?: string
+          interest_fit_score?: number | null
+          language?: string | null
+          match_score?: number
+          skill_fit_score?: number | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_recommendations_career_id_fkey"
+            columns: ["career_id"]
+            isOneToOne: false
+            referencedRelation: "careers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "career_recommendations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_skill_mappings: {
+        Row: {
+          career_id: string
+          created_at: string
+          id: string
+          importance_weight: number
+          is_mandatory: boolean
+          skill_id: string
+        }
+        Insert: {
+          career_id: string
+          created_at?: string
+          id?: string
+          importance_weight?: number
+          is_mandatory?: boolean
+          skill_id: string
+        }
+        Update: {
+          career_id?: string
+          created_at?: string
+          id?: string
+          importance_weight?: number
+          is_mandatory?: boolean
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_skill_mappings_career_id_fkey"
+            columns: ["career_id"]
+            isOneToOne: false
+            referencedRelation: "careers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "career_skill_mappings_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      careers: {
+        Row: {
+          average_salary_max: number | null
+          average_salary_min: number | null
+          color: string | null
+          created_at: string
+          description: string | null
+          difficulty_level: number
+          future_scope_score: number
+          growth_rate: string | null
+          icon: string | null
+          id: string
+          industry: string
+          minimum_education: string
+          name: string
+          preferred_subjects: string[] | null
+          required_skills: string[]
+        }
+        Insert: {
+          average_salary_max?: number | null
+          average_salary_min?: number | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: number
+          future_scope_score?: number
+          growth_rate?: string | null
+          icon?: string | null
+          id?: string
+          industry: string
+          minimum_education?: string
+          name: string
+          preferred_subjects?: string[] | null
+          required_skills?: string[]
+        }
+        Update: {
+          average_salary_max?: number | null
+          average_salary_min?: number | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: number
+          future_scope_score?: number
+          growth_rate?: string | null
+          icon?: string | null
+          id?: string
+          industry?: string
+          minimum_education?: string
+          name?: string
+          preferred_subjects?: string[] | null
+          required_skills?: string[]
+        }
+        Relationships: []
+      }
       concepts: {
         Row: {
           created_at: string
