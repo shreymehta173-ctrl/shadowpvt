@@ -12,6 +12,7 @@ import {
   Brain,
   Menu,
   X,
+  Compass,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Gap Analysis', href: '/gaps', icon: AlertTriangle },
   { name: 'Skill Roadmap', href: '/roadmap', icon: Map },
   { name: 'Progress', href: '/progress', icon: TrendingUp },
+  { name: 'Career Guidance', href: '/career', icon: Compass },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
