@@ -9,6 +9,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Progress from "./pages/Progress";
 import CareerGuidance from "./pages/CareerGuidance";
+import StudyPlanner from "./pages/StudyPlanner";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,6 +44,11 @@ const App = () => (
             <Route path="/career" element={
               <ProtectedRoute>
                 <CareerGuidance />
+              </ProtectedRoute>
+            } />
+            <Route path="/planner" element={
+              <ProtectedRoute>
+                <StudyPlanner />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.progress-tracking-agent]
 verify_jwt = false
+
+[functions.study-planner-agent]
+verify_jwt = false

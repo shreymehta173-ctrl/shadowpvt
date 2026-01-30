@@ -10,12 +10,14 @@ import {
   Menu,
   X,
   Compass,
+  Calendar,
 } from 'lucide-react';
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Career Guidance', href: '/career', icon: Compass },
+  { name: 'Study Planner', href: '/planner', icon: Calendar },
   { name: 'Progress', href: '/progress', icon: TrendingUp },
 ];
 
