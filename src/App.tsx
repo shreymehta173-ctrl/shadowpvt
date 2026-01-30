@@ -11,6 +11,7 @@ import DiagnosticTest from "./pages/DiagnosticTest";
 import GapAnalysis from "./pages/GapAnalysis";
 import Roadmap from "./pages/Roadmap";
 import Progress from "./pages/Progress";
+import CareerGuidance from "./pages/CareerGuidance";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -55,6 +56,11 @@ const App = () => (
             <Route path="/progress" element={
               <ProtectedRoute>
                 <Progress />
+              </ProtectedRoute>
+            } />
+            <Route path="/career" element={
+              <ProtectedRoute>
+                <CareerGuidance />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
