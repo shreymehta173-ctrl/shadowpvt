@@ -37,11 +37,11 @@ export default function Index() {
         <nav className="relative z-10 container mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary via-purple-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-primary/25">
-              <Compass className="w-7 h-7 text-white" />
+              <GraduationCap className="w-7 h-7 text-white" />
             </div>
             <div>
-              <span className="text-xl font-bold text-foreground">CareerPath</span>
-              <span className="text-xs text-muted-foreground block">AI Career Guide</span>
+              <span className="text-xl font-bold text-foreground">PrepMate</span>
+              <span className="text-xs text-muted-foreground block">by Team Shadow</span>
             </div>
           </div>
           <Link to={user ? "/dashboard" : "/auth"}>
@@ -393,12 +393,13 @@ export default function Index() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
-                <Compass className="w-5 h-5 text-white" />
+                <GraduationCap className="w-5 h-5 text-white" />
               </div>
-              <span className="font-semibold text-foreground">CareerPath AI</span>
+              <span className="font-semibold text-foreground">PrepMate</span>
+              <span className="text-xs text-muted-foreground">by Team Shadow</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              © 2024 CareerPath. Helping students find their path. 🚀
+              © 2025 PrepMate. Shape Your Future, Plan Your Success. 🚀
             </p>
           </div>
         </div>

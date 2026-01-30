@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { Brain, ArrowRight, ArrowLeft, Loader2, Sparkles, BookOpen, Clock, Zap } from 'lucide-react';
+import { GraduationCap, ArrowRight, ArrowLeft, Loader2, Sparkles, BookOpen, Clock, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const STEPS = [
@@ -108,11 +108,11 @@ export default function Onboarding() {
       <header className="p-6 border-b border-border">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-              <Brain className="w-6 h-6 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-lg">
+              <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">SkillForge AI</h1>
+              <h1 className="text-lg font-semibold text-foreground">PrepMate</h1>
               <p className="text-sm text-muted-foreground">Step {currentStep + 1} of {STEPS.length}</p>
             </div>
           </div>
@@ -127,14 +127,14 @@ export default function Onboarding() {
           {currentStep === 0 && (
             <div className="text-center space-y-8 animate-fade-in">
               <div className="space-y-4">
-                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center">
-                  <Sparkles className="w-12 h-12 text-primary-foreground" />
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-xl">
+                  <Sparkles className="w-12 h-12 text-white" />
                 </div>
                 <h2 className="text-3xl font-bold text-foreground">
-                  Welcome to SkillForge AI
+                  Welcome to PrepMate
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                  We'll help you discover your learning gaps and create a personalized path to mastery.
+                  Discover your ideal career path and create personalized study plans to achieve your goals.
                 </p>
               </div>
 
