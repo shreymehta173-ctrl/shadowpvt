@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, Loader2, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Loader2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -82,7 +82,7 @@ export default function Auth() {
           });
         } else {
           toast({
-            title: 'Welcome to SkillForge AI!',
+            title: 'Welcome to PrepMate!',
             description: 'Your account has been created. Let\'s set up your profile.',
           });
           navigate('/onboarding');
@@ -119,11 +119,11 @@ export default function Auth() {
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center mb-4">
-              <Brain className="w-10 h-10 text-primary-foreground" />
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center mb-4 shadow-lg">
+              <GraduationCap className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">SkillForge AI</h1>
-            <p className="text-muted-foreground mt-1">Discover your learning potential</p>
+            <h1 className="text-2xl font-bold text-foreground">PrepMate</h1>
+            <p className="text-muted-foreground mt-1">Shape Your Future, Plan Your Success</p>
           </div>
 
           {/* Auth card */}

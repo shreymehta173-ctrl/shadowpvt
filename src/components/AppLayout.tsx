@@ -6,7 +6,7 @@ import {
   LayoutDashboard,
   TrendingUp,
   LogOut,
-  Brain,
+  GraduationCap,
   Menu,
   X,
   Compass,
@@ -32,10 +32,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Brain className="w-5 h-5 text-primary-foreground" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-md">
+              <GraduationCap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-semibold text-foreground">SkillForge AI</span>
+            <span className="font-semibold text-foreground">PrepMate</span>
           </Link>
           <Button
             variant="ghost"
@@ -98,15 +98,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-72 lg:overflow-y-auto lg:bg-sidebar lg:pb-4">
-        <div className="flex h-16 shrink-0 items-center gap-3 px-6">
-          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-            <Brain className="w-6 h-6 text-primary-foreground" />
+        <Link to="/" className="flex h-16 shrink-0 items-center gap-3 px-6 hover:opacity-90 transition-opacity">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-lg">
+            <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground">SkillForge AI</h1>
-            <p className="text-xs text-sidebar-foreground/60">Learning Gap Analyzer</p>
+            <h1 className="text-lg font-bold text-sidebar-foreground">PrepMate</h1>
+            <p className="text-xs text-sidebar-foreground/60">by Team Shadow</p>
           </div>
-        </div>
+        </Link>
 
         <nav className="mt-8 px-4 space-y-1">
           {navigation.map((item) => {
