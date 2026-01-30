@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface CareerRecommendation {
   career_id: string;
@@ -61,6 +62,7 @@ export function useCareerGuidance() {
       setRecommendations(data.recommendations || []);
     } catch (error) {
       console.error('Error fetching career recommendations:', error);
+      toast.error('Failed to load career recommendations');
     } finally {
       setLoading(false);
     }
@@ -83,6 +85,7 @@ export function useCareerGuidance() {
       return data;
     } catch (error) {
       console.error('Error fetching career detail:', error);
+      toast.error('Failed to load career details');
       return null;
     }
   }, [profile?.id]);
@@ -101,16 +104,31 @@ export function useCareerGuidance() {
     setChatLoading(true);
 
     try {
+      // Build chat history for context
+      const chatHistory = chatMessages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+
       const { data, error } = await supabase.functions.invoke('career-guidance-agent', {
         body: {
           action: 'chat',
           student_id: profile.id,
           message,
           language,
+          chat_history: chatHistory,
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific error codes
+        if (error.message?.includes('429')) {
+          toast.error('Rate limit exceeded. Please try again in a moment.');
+        } else if (error.message?.includes('402')) {
+          toast.error('AI credits exhausted. Please add credits to continue.');
+        }
+        throw error;
+      }
 
       const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -132,7 +150,11 @@ export function useCareerGuidance() {
     } finally {
       setChatLoading(false);
     }
-  }, [profile?.id]);
+  }, [profile?.id, chatMessages]);
+
+  const clearChat = useCallback(() => {
+    setChatMessages([]);
+  }, []);
 
   return {
     recommendations,
@@ -143,5 +165,6 @@ export function useCareerGuidance() {
     getCareerDetail,
     sendChatMessage,
     setChatMessages,
+    clearChat,
   };
 }
