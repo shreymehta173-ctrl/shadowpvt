@@ -374,105 +374,573 @@ export function CareerResults({ answers, scores, onRetake, onChatWithMentor }: C
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Career Assessment Report</title>
+  <title>PrepMate Career Assessment Report - by Team Shadow</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333; }
-    h1 { color: #6d28d9; border-bottom: 3px solid #6d28d9; padding-bottom: 10px; }
-    h2 { color: #7c3aed; margin-top: 30px; }
-    h3 { color: #8b5cf6; }
-    .header { text-align: center; margin-bottom: 40px; }
-    .date { color: #666; font-size: 14px; }
-    .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-    .score-box { background: #f3f4f6; padding: 15px; border-radius: 8px; text-align: center; }
-    .score-value { font-size: 24px; font-weight: bold; color: #6d28d9; }
-    .score-label { font-size: 12px; color: #666; text-transform: capitalize; }
-    .question-item { margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #6d28d9; }
-    .question-label { font-weight: bold; color: #374151; }
-    .question-answer { color: #6b7280; margin-top: 5px; }
-    .career-card { margin: 20px 0; padding: 20px; border: 2px solid #e5e7eb; border-radius: 12px; }
-    .career-card.top { border-color: #6d28d9; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); }
-    .career-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .career-name { font-size: 18px; font-weight: bold; }
-    .career-score { font-size: 24px; font-weight: bold; color: #6d28d9; }
-    .career-category { font-size: 12px; background: #e5e7eb; padding: 4px 8px; border-radius: 4px; }
-    .career-section { margin-top: 15px; }
-    .career-section-title { font-weight: bold; margin-bottom: 8px; font-size: 14px; }
-    .career-list { margin: 0; padding-left: 20px; }
-    .career-list li { margin: 5px 0; color: #4b5563; }
-    .career-meta { display: flex; gap: 20px; margin-top: 15px; font-size: 14px; color: #6b7280; }
-    .footer { margin-top: 50px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; }
-    @media print { body { padding: 20px; } }
+    * { box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      max-width: 850px; 
+      margin: 0 auto; 
+      padding: 40px; 
+      color: #1e293b; 
+      background: #f8fafc;
+      line-height: 1.6;
+    }
+    
+    /* Brand Colors: Deep Indigo + Teal + Amber */
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --secondary: #0d9488;
+      --accent: #f59e0b;
+      --accent-light: #fef3c7;
+      --bg-light: #eef2ff;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+    }
+    
+    .brand-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, var(--secondary) 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(79, 70, 229, 0.3);
+    }
+    
+    .brand-logo {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    
+    .brand-name {
+      font-size: 36px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -1px;
+    }
+    
+    .brand-tagline {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+    
+    .brand-team {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .report-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      margin: 30px 0 10px;
+    }
+    
+    .report-date {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--bg-light);
+    }
+    
+    .section-icon {
+      font-size: 24px;
+    }
+    
+    /* Scores Grid */
+    .scores-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+    
+    .score-card {
+      background: linear-gradient(135deg, var(--bg-light) 0%, #f1f5f9 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .score-value {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .score-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: capitalize;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+    
+    .score-bar {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+    }
+    
+    /* Questions */
+    .question-grid {
+      display: grid;
+      gap: 12px;
+    }
+    
+    .question-item {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .question-label {
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+    
+    .question-answer {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    
+    /* Career Cards */
+    .career-card {
+      margin-bottom: 20px;
+      padding: 25px;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      transition: all 0.3s ease;
+    }
+    
+    .career-card.top-match {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--bg-light) 0%, #fdf4ff 50%, #f0fdfa 100%);
+      box-shadow: 0 8px 30px rgba(79, 70, 229, 0.15);
+    }
+    
+    .career-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 12px;
+    }
+    
+    .career-card.top-match .career-rank {
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+    
+    .career-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .career-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    .career-category {
+      display: inline-block;
+      font-size: 11px;
+      background: var(--secondary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 12px;
+    }
+    
+    .career-score-badge {
+      text-align: right;
+    }
+    
+    .career-score {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    
+    .career-card.top-match .career-score {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .career-score-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .career-description {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    
+    .career-sections-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .career-section {
+      background: #f8fafc;
+      padding: 18px;
+      border-radius: 12px;
+    }
+    
+    .career-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .career-section-icon {
+      font-size: 16px;
+    }
+    
+    .career-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+    }
+    
+    .career-list li {
+      margin: 8px 0;
+      color: var(--text-dark);
+    }
+    
+    .career-meta {
+      display: flex;
+      gap: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    
+    .career-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .career-meta-icon {
+      font-size: 18px;
+    }
+    
+    /* Why This Career Section */
+    .why-section {
+      background: linear-gradient(135deg, var(--accent-light) 0%, #fef9c3 100%);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .why-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .why-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .why-list li {
+      color: #78350f;
+      margin: 6px 0;
+      font-size: 14px;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      border-radius: 16px;
+    }
+    
+    .footer-brand {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .footer-tagline {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+    
+    .footer-disclaimer {
+      font-size: 11px;
+      opacity: 0.7;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .footer-team {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    /* Print Styles */
+    @media print { 
+      body { 
+        padding: 20px; 
+        background: white;
+      }
+      .section, .career-card {
+        break-inside: avoid;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🎯 Career Assessment Report</h1>
-    <p class="date">Generated on ${report.reportDate}</p>
+  <!-- Brand Header -->
+  <div class="brand-header">
+    <div class="brand-logo">🎓</div>
+    <h1 class="brand-name">PrepMate</h1>
+    <p class="brand-tagline">Your Personal Career Discovery & Study Planning Platform</p>
+    <p class="brand-team">Developed by Team Shadow</p>
+  </div>
+  
+  <h2 class="report-title">📊 Career Assessment Report</h2>
+  <p class="report-date">Generated on ${report.reportDate}</p>
+
+  <!-- Executive Summary -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon">🎯</span>
+      Executive Summary
+    </div>
+    <p style="color: var(--text-muted); margin-bottom: 15px;">
+      This comprehensive career assessment analyzes your interests, cognitive style, skills, and work preferences 
+      to recommend the most suitable career paths for you. Based on our 15-question psychological framework, 
+      we've identified your top career matches with detailed reasoning.
+    </p>
+    ${report.topMatch ? `
+    <div style="background: linear-gradient(135deg, var(--bg-light), #f0fdfa); padding: 20px; border-radius: 12px; border: 2px solid var(--primary);">
+      <p style="margin: 0; font-size: 16px;"><strong style="color: var(--primary-dark);">Top Recommendation:</strong> 
+      <span style="font-size: 18px; font-weight: 700; color: var(--primary);">${report.topMatch.name}</span> 
+      with a <strong style="color: var(--accent);">${report.topMatch.matchScore}% match score</strong></p>
+    </div>
+    ` : ''}
   </div>
 
-  <h2>📊 Your Profile Strengths</h2>
-  <div class="scores">
-    ${Object.entries(report.scores)
-      .sort(([, a], [, b]) => b - a)
-      .map(([key, value]) => `
-        <div class="score-box">
-          <div class="score-value">${value}/10</div>
-          <div class="score-label">${key}</div>
+  <!-- Profile Strengths -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon">💪</span>
+      Your Profile Strengths
+    </div>
+    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">
+      These scores represent your aptitude across six key dimensions that influence career compatibility.
+    </p>
+    <div class="scores-grid">
+      ${Object.entries(report.scores)
+        .sort(([, a], [, b]) => b - a)
+        .map(([key, value]) => `
+          <div class="score-card">
+            <div class="score-value">${value}</div>
+            <div class="score-label">${key}</div>
+            <div class="score-bar">
+              <div class="score-bar-fill" style="width: ${(value / 10) * 100}%"></div>
+            </div>
+          </div>
+        `).join('')}
+    </div>
+  </div>
+
+  <!-- Questionnaire Responses -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon">📝</span>
+      Your Assessment Responses
+    </div>
+    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">
+      Below are your responses to our 15-question career discovery assessment.
+    </p>
+    <div class="question-grid">
+      ${report.answeredQuestions.map(q => `
+        <div class="question-item">
+          <div class="question-label">${q.question}</div>
+          <div class="question-answer">${q.answer}</div>
         </div>
       `).join('')}
+    </div>
   </div>
 
-  <h2>📝 Your Questionnaire Responses</h2>
-  ${report.answeredQuestions.map(q => `
-    <div class="question-item">
-      <div class="question-label">${q.question}</div>
-      <div class="question-answer">${q.answer}</div>
+  <!-- Career Recommendations -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon">🏆</span>
+      Career Recommendations
     </div>
-  `).join('')}
-
-  <h2>🏆 Career Recommendations</h2>
-  ${report.careerRecommendations.map((career, idx) => `
-    <div class="career-card ${idx === 0 ? 'top' : ''}">
-      <div class="career-header">
-        <div>
-          <span class="career-name">${idx === 0 ? '⭐ ' : ''}#${career.rank} ${career.name}</span>
-          <span class="career-category">${career.category}</span>
+    <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 14px;">
+      Based on your profile, we've identified the following career paths ranked by compatibility. 
+      Each recommendation includes detailed reasoning for why this career suits you.
+    </p>
+    
+    ${report.careerRecommendations.map((career, idx) => `
+      <div class="career-card ${idx === 0 ? 'top-match' : ''}">
+        <div class="career-header">
+          <div style="display: flex; align-items: center;">
+            <span class="career-rank">${idx === 0 ? '★' : career.rank}</span>
+            <div>
+              <span class="career-name">${career.name}</span>
+              <span class="career-category">${career.category}</span>
+            </div>
+          </div>
+          <div class="career-score-badge">
+            <div class="career-score">${career.matchScore}%</div>
+            <div class="career-score-label">Match Score</div>
+          </div>
         </div>
-        <span class="career-score">${career.matchScore}%</span>
+        
+        <p class="career-description">${career.description}</p>
+        
+        <!-- Why This Career Fits -->
+        <div class="why-section">
+          <div class="why-title">
+            <span>💡</span>
+            Why This Career Fits You
+          </div>
+          <ul class="why-list">
+            ${career.whyFits.map(fit => `<li>${fit}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div class="career-sections-grid">
+          <div class="career-section">
+            <div class="career-section-title">
+              <span class="career-section-icon">🎯</span>
+              Required Skills
+            </div>
+            <ul class="career-list">
+              ${career.skills.map(skill => `<li>${skill}</li>`).join('')}
+            </ul>
+          </div>
+          
+          <div class="career-section">
+            <div class="career-section-title">
+              <span class="career-section-icon">📋</span>
+              Next Steps
+            </div>
+            <ul class="career-list">
+              ${career.nextSteps.map((step, i) => `<li><strong>Step ${i + 1}:</strong> ${step}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        
+        <div class="career-meta">
+          <div class="career-meta-item">
+            <span class="career-meta-icon">💰</span>
+            <span><strong>Salary:</strong> ${career.salary}</span>
+          </div>
+          <div class="career-meta-item">
+            <span class="career-meta-icon">📈</span>
+            <span><strong>Growth:</strong> ${career.growth}</span>
+          </div>
+        </div>
       </div>
-      <p>${career.description}</p>
-      
-      <div class="career-section">
-        <div class="career-section-title">✨ Why This Career Fits You:</div>
-        <ul class="career-list">
-          ${career.whyFits.map(fit => `<li>${fit}</li>`).join('')}
-        </ul>
-      </div>
+    `).join('')}
+  </div>
 
-      <div class="career-section">
-        <div class="career-section-title">🎯 Required Skills:</div>
-        <ul class="career-list">
-          ${career.skills.map(skill => `<li>${skill}</li>`).join('')}
-        </ul>
-      </div>
-
-      <div class="career-section">
-        <div class="career-section-title">📋 Next Steps:</div>
-        <ul class="career-list">
-          ${career.nextSteps.map((step, i) => `<li>${i + 1}. ${step}</li>`).join('')}
-        </ul>
-      </div>
-
-      <div class="career-meta">
-        <span>💰 ${career.salary}</span>
-        <span>📈 Growth: ${career.growth}</span>
-      </div>
-    </div>
-  `).join('')}
-
+  <!-- Footer -->
   <div class="footer">
-    <p>Generated by CareerPath AI - Your Personal Career Discovery Platform</p>
-    <p>This report is based on your self-assessment and is meant to guide your career exploration.</p>
+    <div class="footer-brand">🎓 PrepMate</div>
+    <div class="footer-tagline">Your Personal Career Discovery & Study Planning Platform</div>
+    <p class="footer-disclaimer">
+      This report is generated based on your self-assessment responses and is intended to guide your career exploration. 
+      We recommend discussing these findings with career counselors, teachers, and family for comprehensive guidance.
+    </p>
+    <div class="footer-team">
+      Developed with ❤️ by <strong>Team Shadow</strong>
+    </div>
   </div>
 </body>
 </html>`;
@@ -487,46 +955,59 @@ export function CareerResults({ answers, scores, onRetake, onChatWithMentor }: C
       };
     }
     
-    toast.success('Career report opened for printing/saving as PDF');
+    toast.success('PrepMate career report opened for printing/saving as PDF');
   }, [generateReportContent]);
 
   // Download as CSV
   const downloadAsCSV = useCallback(() => {
     const report = generateReportContent();
     
-    let csvContent = 'Career Assessment Report\n';
+    let csvContent = 'PrepMate Career Assessment Report\n';
+    csvContent += 'Developed by Team Shadow\n';
     csvContent += `Generated on,${report.reportDate}\n\n`;
+    
+    // Executive Summary
+    csvContent += 'EXECUTIVE SUMMARY\n';
+    if (report.topMatch) {
+      csvContent += `Top Career Match,"${report.topMatch.name}"\n`;
+      csvContent += `Match Score,${report.topMatch.matchScore}%\n`;
+    }
+    csvContent += '\n';
     
     // Scores section
     csvContent += 'PROFILE STRENGTHS\n';
-    csvContent += 'Dimension,Score\n';
+    csvContent += 'Dimension,Score,Out Of,Percentage\n';
     Object.entries(report.scores).forEach(([key, value]) => {
-      csvContent += `${key},${value}/10\n`;
+      csvContent += `${key},${value},10,${(value / 10) * 100}%\n`;
     });
     
-    csvContent += '\nQUESTIONNAIRE RESPONSES\n';
-    csvContent += 'Question,Answer\n';
-    report.answeredQuestions.forEach(q => {
-      csvContent += `"${q.question}","${q.answer}"\n`;
+    csvContent += '\nASSESSMENT RESPONSES\n';
+    csvContent += 'Question Number,Question,Your Response\n';
+    report.answeredQuestions.forEach((q, idx) => {
+      csvContent += `${idx + 1},"${q.question}","${q.answer}"\n`;
     });
     
     csvContent += '\nCAREER RECOMMENDATIONS\n';
-    csvContent += 'Rank,Career Name,Category,Match Score,Description,Why It Fits,Required Skills,Salary,Growth,Next Steps\n';
+    csvContent += 'Rank,Career Name,Category,Match Score,Description,Why This Career Fits You,Required Skills,Expected Salary,Growth Potential,Next Steps\n';
     report.careerRecommendations.forEach(career => {
       csvContent += `${career.rank},"${career.name}","${career.category}",${career.matchScore}%,"${career.description}","${career.whyFits.join('; ')}","${career.skills.join('; ')}","${career.salary}","${career.growth}","${career.nextSteps.join('; ')}"\n`;
     });
+    
+    csvContent += '\n---\n';
+    csvContent += 'Report Generated by PrepMate - Your Personal Career Discovery Platform\n';
+    csvContent += 'Developed by Team Shadow\n';
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `career-report-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `prepmate-career-report-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    toast.success('Career report downloaded as CSV');
+    toast.success('PrepMate career report downloaded as CSV');
   }, [generateReportContent]);
 
 
