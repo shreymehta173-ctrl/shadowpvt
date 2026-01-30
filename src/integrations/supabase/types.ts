@@ -603,6 +603,54 @@ export type Database = {
           },
         ]
       }
+      session_feedback: {
+        Row: {
+          completion_percentage: number | null
+          created_at: string
+          difficulty_felt: string | null
+          focus_level: string | null
+          id: string
+          notes: string | null
+          session_id: string
+          student_id: string
+        }
+        Insert: {
+          completion_percentage?: number | null
+          created_at?: string
+          difficulty_felt?: string | null
+          focus_level?: string | null
+          id?: string
+          notes?: string | null
+          session_id: string
+          student_id: string
+        }
+        Update: {
+          completion_percentage?: number | null
+          created_at?: string
+          difficulty_felt?: string | null
+          focus_level?: string | null
+          id?: string
+          notes?: string | null
+          session_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "study_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_feedback_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       skill_progress: {
         Row: {
           confidence_score: number | null
@@ -726,6 +774,188 @@ export type Database = {
         }
         Relationships: []
       }
+      student_weaknesses: {
+        Row: {
+          created_at: string
+          difficulty: number | null
+          estimated_effort: number | null
+          id: string
+          is_resolved: boolean | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          student_id: string
+          subject: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty?: number | null
+          estimated_effort?: number | null
+          id?: string
+          is_resolved?: boolean | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          student_id: string
+          subject: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          difficulty?: number | null
+          estimated_effort?: number | null
+          id?: string
+          is_resolved?: boolean | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          student_id?: string
+          subject?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_weaknesses_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_preferences: {
+        Row: {
+          break_duration: number | null
+          created_at: string
+          daily_time_limit: number | null
+          id: string
+          learning_pace:
+            | Database["public"]["Enums"]["learning_pace_enum"]
+            | null
+          preferred_study_days: string[] | null
+          preferred_study_time: string | null
+          session_duration: number | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          break_duration?: number | null
+          created_at?: string
+          daily_time_limit?: number | null
+          id?: string
+          learning_pace?:
+            | Database["public"]["Enums"]["learning_pace_enum"]
+            | null
+          preferred_study_days?: string[] | null
+          preferred_study_time?: string | null
+          session_duration?: number | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          break_duration?: number | null
+          created_at?: string
+          daily_time_limit?: number | null
+          id?: string
+          learning_pace?:
+            | Database["public"]["Enums"]["learning_pace_enum"]
+            | null
+          preferred_study_days?: string[] | null
+          preferred_study_time?: string | null
+          session_duration?: number | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_preferences_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          difficulty: number | null
+          duration_minutes: number
+          effectiveness_score: number | null
+          feedback_notes: string | null
+          id: string
+          plan_id: string
+          scheduled_date: string
+          scheduled_time: string | null
+          session_type: string | null
+          status: Database["public"]["Enums"]["session_status"] | null
+          student_id: string
+          subject: string
+          topic: string
+          updated_at: string
+          weakness_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          difficulty?: number | null
+          duration_minutes: number
+          effectiveness_score?: number | null
+          feedback_notes?: string | null
+          id?: string
+          plan_id: string
+          scheduled_date: string
+          scheduled_time?: string | null
+          session_type?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          student_id: string
+          subject: string
+          topic: string
+          updated_at?: string
+          weakness_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          difficulty?: number | null
+          duration_minutes?: number
+          effectiveness_score?: number | null
+          feedback_notes?: string | null
+          id?: string
+          plan_id?: string
+          scheduled_date?: string
+          scheduled_time?: string | null
+          session_type?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+          student_id?: string
+          subject?: string
+          topic?: string
+          updated_at?: string
+          weakness_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_sessions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_study_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_sessions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_sessions_weakness_id_fkey"
+            columns: ["weakness_id"]
+            isOneToOne: false
+            referencedRelation: "student_weaknesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       topics: {
         Row: {
           color: string | null
@@ -753,6 +983,53 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_study_plans: {
+        Row: {
+          ai_notes: string | null
+          created_at: string
+          id: string
+          status: string | null
+          student_id: string
+          total_completed_minutes: number | null
+          total_planned_minutes: number | null
+          updated_at: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Insert: {
+          ai_notes?: string | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          student_id: string
+          total_completed_minutes?: number | null
+          total_planned_minutes?: number | null
+          updated_at?: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Update: {
+          ai_notes?: string | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          student_id?: string
+          total_completed_minutes?: number | null
+          total_planned_minutes?: number | null
+          updated_at?: string
+          week_end_date?: string
+          week_start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_study_plans_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -762,7 +1039,10 @@ export type Database = {
     }
     Enums: {
       gap_severity: "critical" | "moderate" | "minor" | "none"
+      learning_pace_enum: "slow" | "medium" | "fast"
       learning_speed: "slow" | "average" | "fast"
+      priority_level: "low" | "medium" | "high" | "critical"
+      session_status: "pending" | "completed" | "partial" | "skipped"
       skill_level: "beginner" | "intermediate" | "advanced"
     }
     CompositeTypes: {
@@ -892,7 +1172,10 @@ export const Constants = {
   public: {
     Enums: {
       gap_severity: ["critical", "moderate", "minor", "none"],
+      learning_pace_enum: ["slow", "medium", "fast"],
       learning_speed: ["slow", "average", "fast"],
+      priority_level: ["low", "medium", "high", "critical"],
+      session_status: ["pending", "completed", "partial", "skipped"],
       skill_level: ["beginner", "intermediate", "advanced"],
     },
   },

@@ -16,6 +16,8 @@ import {
   Clock,
   Star,
   Brain,
+  Calendar,
+  BookOpen,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -196,6 +198,15 @@ export default function Dashboard() {
                   <div className="text-left">
                     <p className="font-medium">Career Guidance</p>
                     <p className="text-xs text-muted-foreground">Discover careers that match you</p>
+                  </div>
+                </Button>
+              </Link>
+              <Link to="/planner" className="block">
+                <Button variant="outline" className="w-full justify-start h-auto py-3">
+                  <Calendar className="mr-3 h-5 w-5 text-cyan-500" />
+                  <div className="text-left">
+                    <p className="font-medium">Study Planner</p>
+                    <p className="text-xs text-muted-foreground">Create personalized study schedules</p>
                   </div>
                 </Button>
               </Link>
