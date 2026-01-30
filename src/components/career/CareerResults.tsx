@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,9 +15,19 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
-  MessageCircle
+  MessageCircle,
+  Download,
+  FileText,
+  FileSpreadsheet
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { CareerScores, QuestionnaireAnswers } from './CareerQuestionnaire';
+import { toast } from 'sonner';
 
 interface CareerMatch {
   id: string;
@@ -281,6 +291,25 @@ function calculateCareerMatches(scores: CareerScores, answers: QuestionnaireAnsw
   return matches.sort((a, b) => b.matchScore - a.matchScore);
 }
 
+// Question labels for the report
+const questionLabels: Record<keyof QuestionnaireAnswers, string> = {
+  classCompleted: 'Class Completed',
+  subjects10th: 'Subjects Enjoyed (10th)',
+  stream12th: 'Stream in 12th',
+  freeTimeActivity: 'Free Time Activity',
+  excitingActivity: 'Most Exciting Activity',
+  problemSolving: 'Problem Solving Approach',
+  thinkingStyle: 'Thinking Style',
+  bestSkills: 'Best Skills',
+  preferredTask: 'Preferred Task Type',
+  competitiveExams: 'Competitive Exams Comfort',
+  priority: 'Career Priority',
+  continuousLearning: 'Continuous Learning Attitude',
+  careerPath: 'Career Path Preference',
+  expertOrVariety: 'Expertise vs Variety',
+  failureResponse: 'Response to Failure',
+};
+
 export function CareerResults({ answers, scores, onRetake, onChatWithMentor }: CareerResultsProps) {
   const [matches, setMatches] = useState<CareerMatch[]>([]);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
@@ -294,6 +323,212 @@ export function CareerResults({ answers, scores, onRetake, onChatWithMentor }: C
   const topMatch = matches[0];
   const alternatives = matches.slice(1, 3);
   const otherOptions = matches.slice(3);
+
+  // Generate PDF report content
+  const generateReportContent = useCallback(() => {
+    const reportDate = new Date().toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const answeredQuestions = Object.entries(answers)
+      .filter(([_, value]) => value !== null && value !== undefined && (Array.isArray(value) ? value.length > 0 : true))
+      .map(([key, value]) => ({
+        question: questionLabels[key as keyof QuestionnaireAnswers] || key,
+        answer: Array.isArray(value) ? value.join(', ') : String(value)
+      }));
+
+    const careerRecommendations = matches.slice(0, 5).map((career, index) => ({
+      rank: index + 1,
+      name: career.name,
+      category: career.category,
+      matchScore: career.matchScore,
+      description: career.description,
+      whyFits: career.whyFits,
+      skills: career.skills,
+      salary: career.salary,
+      growth: career.growth,
+      nextSteps: career.nextSteps
+    }));
+
+    return {
+      reportDate,
+      scores,
+      answeredQuestions,
+      careerRecommendations,
+      topMatch: topMatch ? {
+        name: topMatch.name,
+        matchScore: topMatch.matchScore,
+        whyFits: topMatch.whyFits
+      } : null
+    };
+  }, [answers, matches, scores, topMatch]);
+
+  // Download as PDF (HTML-based printable document)
+  const downloadAsPDF = useCallback(() => {
+    const report = generateReportContent();
+    
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Career Assessment Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #333; }
+    h1 { color: #6d28d9; border-bottom: 3px solid #6d28d9; padding-bottom: 10px; }
+    h2 { color: #7c3aed; margin-top: 30px; }
+    h3 { color: #8b5cf6; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .date { color: #666; font-size: 14px; }
+    .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+    .score-box { background: #f3f4f6; padding: 15px; border-radius: 8px; text-align: center; }
+    .score-value { font-size: 24px; font-weight: bold; color: #6d28d9; }
+    .score-label { font-size: 12px; color: #666; text-transform: capitalize; }
+    .question-item { margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #6d28d9; }
+    .question-label { font-weight: bold; color: #374151; }
+    .question-answer { color: #6b7280; margin-top: 5px; }
+    .career-card { margin: 20px 0; padding: 20px; border: 2px solid #e5e7eb; border-radius: 12px; }
+    .career-card.top { border-color: #6d28d9; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); }
+    .career-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .career-name { font-size: 18px; font-weight: bold; }
+    .career-score { font-size: 24px; font-weight: bold; color: #6d28d9; }
+    .career-category { font-size: 12px; background: #e5e7eb; padding: 4px 8px; border-radius: 4px; }
+    .career-section { margin-top: 15px; }
+    .career-section-title { font-weight: bold; margin-bottom: 8px; font-size: 14px; }
+    .career-list { margin: 0; padding-left: 20px; }
+    .career-list li { margin: 5px 0; color: #4b5563; }
+    .career-meta { display: flex; gap: 20px; margin-top: 15px; font-size: 14px; color: #6b7280; }
+    .footer { margin-top: 50px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Career Assessment Report</h1>
+    <p class="date">Generated on ${report.reportDate}</p>
+  </div>
+
+  <h2>📊 Your Profile Strengths</h2>
+  <div class="scores">
+    ${Object.entries(report.scores)
+      .sort(([, a], [, b]) => b - a)
+      .map(([key, value]) => `
+        <div class="score-box">
+          <div class="score-value">${value}/10</div>
+          <div class="score-label">${key}</div>
+        </div>
+      `).join('')}
+  </div>
+
+  <h2>📝 Your Questionnaire Responses</h2>
+  ${report.answeredQuestions.map(q => `
+    <div class="question-item">
+      <div class="question-label">${q.question}</div>
+      <div class="question-answer">${q.answer}</div>
+    </div>
+  `).join('')}
+
+  <h2>🏆 Career Recommendations</h2>
+  ${report.careerRecommendations.map((career, idx) => `
+    <div class="career-card ${idx === 0 ? 'top' : ''}">
+      <div class="career-header">
+        <div>
+          <span class="career-name">${idx === 0 ? '⭐ ' : ''}#${career.rank} ${career.name}</span>
+          <span class="career-category">${career.category}</span>
+        </div>
+        <span class="career-score">${career.matchScore}%</span>
+      </div>
+      <p>${career.description}</p>
+      
+      <div class="career-section">
+        <div class="career-section-title">✨ Why This Career Fits You:</div>
+        <ul class="career-list">
+          ${career.whyFits.map(fit => `<li>${fit}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="career-section">
+        <div class="career-section-title">🎯 Required Skills:</div>
+        <ul class="career-list">
+          ${career.skills.map(skill => `<li>${skill}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="career-section">
+        <div class="career-section-title">📋 Next Steps:</div>
+        <ul class="career-list">
+          ${career.nextSteps.map((step, i) => `<li>${i + 1}. ${step}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="career-meta">
+        <span>💰 ${career.salary}</span>
+        <span>📈 Growth: ${career.growth}</span>
+      </div>
+    </div>
+  `).join('')}
+
+  <div class="footer">
+    <p>Generated by CareerPath AI - Your Personal Career Discovery Platform</p>
+    <p>This report is based on your self-assessment and is meant to guide your career exploration.</p>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    }
+    
+    toast.success('Career report opened for printing/saving as PDF');
+  }, [generateReportContent]);
+
+  // Download as CSV
+  const downloadAsCSV = useCallback(() => {
+    const report = generateReportContent();
+    
+    let csvContent = 'Career Assessment Report\n';
+    csvContent += `Generated on,${report.reportDate}\n\n`;
+    
+    // Scores section
+    csvContent += 'PROFILE STRENGTHS\n';
+    csvContent += 'Dimension,Score\n';
+    Object.entries(report.scores).forEach(([key, value]) => {
+      csvContent += `${key},${value}/10\n`;
+    });
+    
+    csvContent += '\nQUESTIONNAIRE RESPONSES\n';
+    csvContent += 'Question,Answer\n';
+    report.answeredQuestions.forEach(q => {
+      csvContent += `"${q.question}","${q.answer}"\n`;
+    });
+    
+    csvContent += '\nCAREER RECOMMENDATIONS\n';
+    csvContent += 'Rank,Career Name,Category,Match Score,Description,Why It Fits,Required Skills,Salary,Growth,Next Steps\n';
+    report.careerRecommendations.forEach(career => {
+      csvContent += `${career.rank},"${career.name}","${career.category}",${career.matchScore}%,"${career.description}","${career.whyFits.join('; ')}","${career.skills.join('; ')}","${career.salary}","${career.growth}","${career.nextSteps.join('; ')}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `career-report-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Career report downloaded as CSV');
+  }, [generateReportContent]);
+
 
   return (
     <div className="p-4 md:p-8 space-y-8">
@@ -510,6 +745,31 @@ export function CareerResults({ answers, scores, onRetake, onChatWithMentor }: C
           <MessageCircle className="h-5 w-5" />
           Chat with AI Mentor
         </Button>
+        
+        {/* Download Report Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2 border-primary/30 hover:bg-primary/5"
+            >
+              <Download className="h-5 w-5" />
+              Download Report
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-48">
+            <DropdownMenuItem onClick={downloadAsPDF} className="cursor-pointer">
+              <FileText className="h-4 w-4 mr-2 text-primary" />
+              Save as PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={downloadAsCSV} className="cursor-pointer">
+              <FileSpreadsheet className="h-4 w-4 mr-2 text-emerald-500" />
+              Export as CSV
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Button
           variant="outline"
           size="lg"
