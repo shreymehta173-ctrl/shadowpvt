@@ -15,9 +15,11 @@ import {
   User,
   Zap,
   MessageSquare,
+  Maximize2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/hooks/useCareerGuidance';
+import { FullscreenChatDialog } from './FullscreenChatDialog';
 
 interface CareerChatbotProps {
   messages: ChatMessage[];
@@ -45,6 +47,7 @@ const SUGGESTION_CHIPS_HINDI = [
 export function CareerChatbot({ messages, loading, onSendMessage, onClearChat }: CareerChatbotProps) {
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState<'English' | 'Hindi'>('English');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,61 +75,83 @@ export function CareerChatbot({ messages, loading, onSendMessage, onClearChat }:
   const chips = language === 'Hindi' ? SUGGESTION_CHIPS_HINDI : SUGGESTION_CHIPS;
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden border-0 shadow-xl bg-gradient-to-b from-card via-card to-muted/30">
-      {/* Animated Header */}
-      <CardHeader className="pb-3 border-b border-border/30 bg-gradient-to-r from-primary/5 via-accent/5 to-success/5 relative overflow-hidden">
-        {/* Animated background particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-2 left-4 w-2 h-2 rounded-full bg-primary/20 animate-pulse" />
-          <div className="absolute top-4 right-8 w-1.5 h-1.5 rounded-full bg-accent/30 animate-bounce" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute bottom-2 left-1/3 w-1 h-1 rounded-full bg-success/25 animate-ping" style={{ animationDelay: '1s' }} />
-        </div>
+    <>
+      <FullscreenChatDialog
+        open={isFullscreen}
+        onOpenChange={setIsFullscreen}
+        messages={messages}
+        loading={loading}
+        onSendMessage={onSendMessage}
+        onClearChat={onClearChat}
+      />
+      
+      <Card className="h-full flex flex-col overflow-hidden border-0 shadow-xl bg-gradient-to-b from-card via-card to-muted/30 relative group">
+        {/* Glow effect */}
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         
-        <div className="flex items-center justify-between relative z-10">
-          <CardTitle className="flex items-center gap-3 text-lg">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25 animate-pulse">
-                <Bot className="h-5 w-5 text-primary-foreground" />
+        {/* Animated Header */}
+        <CardHeader className="pb-3 border-b border-border/30 bg-gradient-to-r from-primary/10 via-accent/5 to-success/10 relative overflow-hidden">
+          {/* Animated background particles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-2 left-4 w-2 h-2 rounded-full bg-primary/30 animate-pulse" />
+            <div className="absolute top-4 right-12 w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce" style={{ animationDelay: '0.5s' }} />
+            <div className="absolute bottom-2 left-1/3 w-1.5 h-1.5 rounded-full bg-success/35 animate-ping" style={{ animationDelay: '1s' }} />
+          </div>
+          
+          <div className="flex items-center justify-between relative z-10">
+            <CardTitle className="flex items-center gap-3 text-lg">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+                  <Bot className="h-5 w-5 text-primary-foreground" />
+                </div>
+                {/* Online indicator */}
+                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success rounded-full border-2 border-card flex items-center justify-center">
+                  <Zap className="h-2 w-2 text-success-foreground" />
+                </div>
               </div>
-              {/* Online indicator */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success rounded-full border-2 border-card flex items-center justify-center">
-                <Zap className="h-2 w-2 text-success-foreground" />
+              <div>
+                <span className="font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Career Mentor</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-medium">Online • Powered by AI</span>
+                </div>
               </div>
-            </div>
-            <div>
-              <span className="font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">AI Career Mentor</span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
-                </span>
-                <span className="text-[10px] text-muted-foreground font-medium">Online • Powered by AI</span>
-              </div>
-            </div>
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLanguage(l => l === 'English' ? 'Hindi' : 'English')}
-              className="gap-1.5 h-8 bg-background/50 backdrop-blur-sm border-border/50 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {language === 'English' ? 'EN' : 'हिं'}
-            </Button>
-            {messages.length > 0 && onClearChat && (
+            </CardTitle>
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onClearChat}
-                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300"
+                onClick={() => setIsFullscreen(true)}
+                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                title="Open fullscreen"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Maximize2 className="h-3.5 w-3.5" />
               </Button>
-            )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setLanguage(l => l === 'English' ? 'Hindi' : 'English')}
+                className="gap-1.5 h-8 bg-background/50 backdrop-blur-sm border-border/50 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                {language === 'English' ? 'EN' : 'हिं'}
+              </Button>
+              {messages.length > 0 && onClearChat && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClearChat}
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </CardHeader>
+        </CardHeader>
 
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
         <ScrollArea className="flex-1" ref={scrollRef}>
@@ -320,5 +345,6 @@ export function CareerChatbot({ messages, loading, onSendMessage, onClearChat }:
         </div>
       </CardContent>
     </Card>
+    </>
   );
 }
