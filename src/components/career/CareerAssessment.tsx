@@ -32,7 +32,12 @@ export interface AssessmentAnswers {
 }
 
 interface CareerAssessmentProps {
-  onComplete: (answers: AssessmentAnswers, scores: ScoreDimensions) => void;
+  onComplete: (
+    answers: AssessmentAnswers, 
+    scores: ScoreDimensions,
+    completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce',
+    stream?: string
+  ) => void;
 }
 
 const initialScores: ScoreDimensions = {
@@ -107,7 +112,10 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
 
   const handleComplete = () => {
     const scores = calculateScores();
-    onComplete(answers, scores);
+    const mappedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce' = 
+      answers.completedClass === '10th' ? 'after_10th' :
+      answers.completedClass === '12th_science' ? 'after_12th_science' : 'after_12th_commerce';
+    onComplete(answers, scores, mappedClass, answers.stream12th || undefined);
   };
 
   const progress = questions.length > 0 

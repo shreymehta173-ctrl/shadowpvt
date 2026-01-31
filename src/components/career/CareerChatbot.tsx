@@ -30,18 +30,18 @@ interface CareerChatbotProps {
 
 const SUGGESTION_CHIPS = [
   "What career suits me best?",
-  "How do I become a Data Scientist?",
-  "Which skills should I learn first?",
-  "What's the salary range for Software Engineers?",
-  "Explain my roadmap",
+  "What entrance exams should I prepare for?",
+  "Explain my career roadmap",
+  "What skills should I develop?",
+  "What's the salary range for my top career?",
 ];
 
 const SUGGESTION_CHIPS_HINDI = [
   "मेरे लिए कौन सा करियर सबसे अच्छा है?",
-  "Data Scientist कैसे बनें?",
-  "पहले कौन से स्किल्स सीखूं?",
-  "सॉफ्टवेयर इंजीनियर की सैलरी कितनी है?",
-  "मेरा रोडमैप समझाएं",
+  "कौन से एंट्रेंस एग्जाम की तैयारी करूं?",
+  "मेरा करियर रोडमैप समझाएं",
+  "कौन से स्किल्स सीखने चाहिए?",
+  "मेरे टॉप करियर की सैलरी कितनी है?",
 ];
 
 export function CareerChatbot({ messages, loading, onSendMessage, onClearChat }: CareerChatbotProps) {
