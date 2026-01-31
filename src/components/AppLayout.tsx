@@ -1,12 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import prepmateLogo from '@/assets/prepmate-logo.png';
 import {
   LayoutDashboard,
-  TrendingUp,
+  BookOpen,
   LogOut,
   Menu,
   X,
@@ -15,17 +17,20 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Career Guidance', href: '/career', icon: Compass },
-  { name: 'Study Planner', href: '/planner', icon: Calendar },
-  { name: 'Progress', href: '/progress', icon: TrendingUp },
+const getNavigation = (t: (en: string, hi: string) => string) => [
+  { name: t('Dashboard', 'डैशबोर्ड'), href: '/dashboard', icon: LayoutDashboard },
+  { name: t('Career Guidance', 'करियर मार्गदर्शन'), href: '/career', icon: Compass },
+  { name: t('Study Planner', 'अध्ययन योजनाकार'), href: '/planner', icon: Calendar },
+  { name: t('Student Resources', 'छात्र संसाधन'), href: '/progress', icon: BookOpen },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, signOut } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const navigation = getNavigation(t);
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,6 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="font-bold text-foreground text-lg">PrepMate</span>
           </Link>
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
             <Button
               variant="ghost"
@@ -130,10 +136,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="mt-auto px-4 pt-8">
-          {/* Theme toggle in sidebar */}
-          <div className="flex items-center justify-between px-4 py-2 mb-4">
-            <span className="text-sm text-sidebar-foreground/70">Theme</span>
+          {/* Theme and Language toggles in sidebar */}
+          <div className="flex items-center justify-between px-4 py-2 mb-2">
+            <span className="text-sm text-sidebar-foreground/70">{t('Theme', 'थीम')}</span>
             <ThemeToggle />
+          </div>
+          <div className="flex items-center justify-between px-4 py-2 mb-4">
+            <span className="text-sm text-sidebar-foreground/70">{t('Language', 'भाषा')}</span>
+            <LanguageToggle />
           </div>
           
           <div className="rounded-2xl bg-sidebar-accent p-4">
@@ -145,7 +155,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-sidebar-foreground truncate">
-                  {profile?.display_name || 'Student'}
+                  {profile?.display_name || t('Student', 'छात्र')}
                 </p>
                 <p className="text-xs text-sidebar-foreground/60 truncate">
                   {user?.email}
@@ -159,7 +169,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={signOut}
             >
               <LogOut className="h-4 w-4" />
-              Sign Out
+              {t('Sign Out', 'साइन आउट')}
             </Button>
           </div>
         </div>
