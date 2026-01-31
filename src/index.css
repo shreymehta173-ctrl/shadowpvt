@@ -3,140 +3,164 @@
 @tailwind utilities;
 
 /* PrepMate - Shape Your Career Path
-   Professional career discovery platform with teal/cyan accents and warm cream tones.
+   Vibrant career discovery platform with teal/cyan primary and amber accents.
 */
 
 @layer base {
   :root {
-    /* Core backgrounds - Light professional */
-    --background: 210 20% 98%;
-    --foreground: 210 25% 10%;
+    /* Core backgrounds - Clean Light Mode */
+    --background: 180 15% 98%;
+    --foreground: 200 35% 10%;
 
     /* Cards & Surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 210 25% 10%;
+    --card-foreground: 200 35% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 25% 10%;
+    --popover-foreground: 200 35% 10%;
 
-    /* Primary - Teal/Cyan (from logo) */
-    --primary: 175 55% 42%;
+    /* Primary - Vibrant Teal */
+    --primary: 174 84% 38%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Warm Cream (from logo) */
-    --secondary: 25 30% 92%;
-    --secondary-foreground: 210 25% 15%;
+    /* Secondary - Light Cool Gray */
+    --secondary: 200 15% 93%;
+    --secondary-foreground: 200 25% 20%;
 
     /* Muted - Soft backgrounds */
-    --muted: 200 15% 95%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 200 12% 92%;
+    --muted-foreground: 200 15% 45%;
 
-    /* Accent - Deep Teal */
-    --accent: 175 65% 35%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Amber Gold */
+    --accent: 38 95% 55%;
+    --accent-foreground: 200 35% 10%;
 
-    /* Destructive - Rose Red */
-    --destructive: 0 72% 51%;
+    /* Destructive - Coral Red */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     /* Success - Emerald */
-    --success: 160 84% 39%;
+    --success: 152 75% 40%;
     --success-foreground: 0 0% 100%;
 
     /* Warning - Amber */
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 95% 50%;
+    --warning-foreground: 200 35% 10%;
 
     /* Info - Sky Blue */
-    --info: 199 89% 48%;
+    --info: 205 85% 55%;
     --info-foreground: 0 0% 100%;
 
     /* Trait Level Colors */
     --trait-low: 38 92% 50%;
-    --trait-medium: 199 89% 48%;
-    --trait-high: 160 84% 39%;
+    --trait-medium: 205 85% 55%;
+    --trait-high: 152 75% 40%;
 
     /* Borders & Inputs */
     --border: 200 15% 88%;
     --input: 200 15% 88%;
-    --ring: 175 55% 42%;
+    --ring: 174 84% 38%;
 
     --radius: 0.75rem;
 
-    /* Sidebar - Dark Charcoal (from logo) */
-    --sidebar-background: 210 20% 12%;
-    --sidebar-foreground: 25 25% 92%;
-    --sidebar-primary: 175 55% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 18%;
-    --sidebar-accent-foreground: 25 25% 92%;
-    --sidebar-border: 210 15% 22%;
-    --sidebar-ring: 175 55% 42%;
+    /* Sidebar - Rich Dark Teal */
+    --sidebar-background: 174 60% 18%;
+    --sidebar-foreground: 180 15% 98%;
+    --sidebar-primary: 38 95% 55%;
+    --sidebar-primary-foreground: 200 35% 10%;
+    --sidebar-accent: 174 50% 24%;
+    --sidebar-accent-foreground: 180 15% 98%;
+    --sidebar-border: 174 45% 28%;
+    --sidebar-ring: 38 95% 55%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(175 55% 42%), hsl(185 60% 48%));
-    --gradient-success: linear-gradient(135deg, hsl(160 84% 39%), hsl(170 80% 45%));
-    --gradient-accent: linear-gradient(135deg, hsl(175 65% 35%), hsl(190 70% 40%));
-    --gradient-hero: linear-gradient(135deg, hsl(210 20% 12%) 0%, hsl(210 25% 18%) 50%, hsl(175 55% 30%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(200 15% 98%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(25 30% 92%), hsl(30 35% 88%));
+    --gradient-primary: linear-gradient(135deg, hsl(174 84% 38%), hsl(180 70% 45%));
+    --gradient-success: linear-gradient(135deg, hsl(152 75% 40%), hsl(160 70% 48%));
+    --gradient-accent: linear-gradient(135deg, hsl(38 95% 55%), hsl(45 100% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(174 60% 18%) 0%, hsl(200 40% 15%) 50%, hsl(174 84% 25%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(180 15% 98%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(210 20% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(210 20% 20% / 0.08), 0 2px 4px -2px hsl(210 20% 20% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(210 20% 20% / 0.1), 0 4px 6px -4px hsl(210 20% 20% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(210 20% 20% / 0.1), 0 8px 10px -6px hsl(210 20% 20% / 0.05);
-    --shadow-glow: 0 0 40px hsl(175 55% 42% / 0.2);
-    --shadow-success: 0 0 20px hsl(160 84% 39% / 0.25);
-    --shadow-accent: 0 0 30px hsl(175 65% 35% / 0.2);
+    --shadow-sm: 0 1px 2px 0 hsl(200 20% 20% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(200 20% 20% / 0.1), 0 2px 4px -2px hsl(200 20% 20% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(200 20% 20% / 0.12), 0 4px 6px -4px hsl(200 20% 20% / 0.08);
+    --shadow-xl: 0 20px 25px -5px hsl(200 20% 20% / 0.15), 0 8px 10px -6px hsl(200 20% 20% / 0.1);
+    --shadow-glow: 0 0 40px hsl(174 84% 38% / 0.25);
+    --shadow-success: 0 0 20px hsl(152 75% 40% / 0.3);
+    --shadow-accent: 0 0 30px hsl(38 95% 55% / 0.25);
+
+    /* Chart Colors */
+    --chart-1: 174 84% 38%;
+    --chart-2: 38 95% 55%;
+    --chart-3: 205 85% 55%;
+    --chart-4: 152 75% 40%;
+    --chart-5: 280 65% 55%;
   }
 
   .dark {
-    --background: 210 20% 8%;
-    --foreground: 25 20% 95%;
+    /* Dark Mode - Deep Ocean */
+    --background: 200 40% 6%;
+    --foreground: 180 15% 95%;
 
-    --card: 210 20% 12%;
-    --card-foreground: 25 20% 95%;
+    --card: 200 35% 10%;
+    --card-foreground: 180 15% 95%;
 
-    --popover: 210 20% 12%;
-    --popover-foreground: 25 20% 95%;
+    --popover: 200 35% 10%;
+    --popover-foreground: 180 15% 95%;
 
-    --primary: 175 55% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 174 80% 48%;
+    --primary-foreground: 200 40% 6%;
 
-    --secondary: 210 20% 18%;
-    --secondary-foreground: 25 20% 92%;
+    --secondary: 200 30% 15%;
+    --secondary-foreground: 180 15% 90%;
 
-    --muted: 210 20% 16%;
-    --muted-foreground: 200 10% 60%;
+    --muted: 200 25% 13%;
+    --muted-foreground: 200 15% 55%;
 
-    --accent: 175 60% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 38 95% 58%;
+    --accent-foreground: 200 40% 6%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 84% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 152 70% 48%;
+    --success-foreground: 200 40% 6%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 200 40% 6%;
 
-    --info: 199 89% 55%;
-    --info-foreground: 0 0% 100%;
+    --info: 205 80% 58%;
+    --info-foreground: 200 40% 6%;
 
-    --border: 210 20% 22%;
-    --input: 210 20% 22%;
-    --ring: 175 55% 50%;
+    --border: 200 25% 18%;
+    --input: 200 25% 18%;
+    --ring: 174 80% 48%;
 
-    --sidebar-background: 210 25% 6%;
-    --sidebar-foreground: 25 20% 95%;
-    --sidebar-primary: 175 55% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 14%;
-    --sidebar-accent-foreground: 25 20% 95%;
-    --sidebar-border: 210 20% 18%;
-    --sidebar-ring: 175 55% 50%;
+    /* Dark Sidebar */
+    --sidebar-background: 200 45% 4%;
+    --sidebar-foreground: 180 15% 98%;
+    --sidebar-primary: 174 80% 48%;
+    --sidebar-primary-foreground: 200 40% 6%;
+    --sidebar-accent: 200 35% 10%;
+    --sidebar-accent-foreground: 180 15% 98%;
+    --sidebar-border: 200 30% 16%;
+    --sidebar-ring: 174 80% 48%;
+
+    /* Dark Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(200 45% 4%) 0%, hsl(200 40% 8%) 50%, hsl(174 60% 15%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(200 35% 10%) 0%, hsl(200 30% 8%) 100%);
+
+    /* Dark Shadows */
+    --shadow-glow: 0 0 50px hsl(174 80% 48% / 0.2);
+    --shadow-success: 0 0 25px hsl(152 70% 48% / 0.25);
+    --shadow-accent: 0 0 35px hsl(38 95% 58% / 0.2);
+
+    /* Dark Chart Colors */
+    --chart-1: 174 80% 48%;
+    --chart-2: 38 95% 58%;
+    --chart-3: 205 80% 58%;
+    --chart-4: 152 70% 48%;
+    --chart-5: 280 60% 58%;
   }
 }
 
@@ -161,14 +185,19 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50;
+    @apply bg-primary/30 rounded-full;
+    transition: background-color 0.2s;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
   }
 }
 
 @layer components {
   /* Trait Progress Meter */
   .trait-meter {
-    @apply relative h-2 w-full overflow-hidden rounded-full bg-muted;
+    @apply relative h-2.5 w-full overflow-hidden rounded-full bg-muted;
   }
 
   .trait-meter-fill {
@@ -194,7 +223,7 @@
   }
 
   .card-interactive {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/30;
   }
 
   /* Hero Section */
@@ -204,7 +233,7 @@
 
   /* Assessment Card */
   .assessment-card {
-    @apply relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300;
+    @apply relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300;
   }
 
   .assessment-card::before {
@@ -218,7 +247,7 @@
   }
 
   .assessment-card:hover {
-    @apply shadow-lg border-primary/30;
+    @apply shadow-xl border-primary/40;
   }
 
   /* Assessment Option */
@@ -227,16 +256,16 @@
   }
 
   .assessment-option:hover {
-    @apply border-primary/40 bg-primary/5;
+    @apply border-primary/40 bg-primary/5 shadow-md;
   }
 
   .assessment-option.selected {
-    @apply border-primary bg-primary/10;
+    @apply border-primary bg-primary/10 shadow-lg;
   }
 
   /* Animated Background */
   .animated-gradient {
-    background: linear-gradient(-45deg, hsl(175 55% 42%), hsl(185 60% 48%), hsl(210 20% 12%), hsl(175 65% 35%));
+    background: linear-gradient(-45deg, hsl(174 84% 38%), hsl(38 95% 55%), hsl(205 85% 55%), hsl(152 75% 40%));
     background-size: 400% 400%;
     animation: gradient-shift 15s ease infinite;
   }
@@ -253,8 +282,20 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(175 55% 42% / 0.4); }
-    50% { box-shadow: 0 0 20px 10px hsl(175 55% 42% / 0); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(174 84% 38% / 0.4); }
+    50% { box-shadow: 0 0 20px 10px hsl(174 84% 38% / 0); }
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 
   /* Progress animation */
@@ -291,6 +332,21 @@
       transform: translateY(0);
     }
   }
+
+  /* Glow button */
+  .glow-button {
+    @apply relative overflow-hidden;
+  }
+
+  .glow-button::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: radial-gradient(circle at center, hsl(var(--primary) / 0.3), transparent 70%);
+  }
+
+  .glow-button:hover::before {
+    @apply opacity-100;
+  }
 }
 
 @layer utilities {
@@ -302,6 +358,11 @@
   .text-gradient-success {
     @apply bg-clip-text text-transparent;
     background: var(--gradient-success);
+  }
+
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-accent);
   }
 
   .bg-gradient-primary {
@@ -330,10 +391,30 @@
 
   /* Glass effect */
   .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20;
+    @apply bg-card/80 backdrop-blur-xl border border-border/50;
   }
 
   .glass-dark {
-    @apply bg-black/30 backdrop-blur-lg border border-white/10;
+    @apply bg-background/60 backdrop-blur-xl border border-border/30;
+  }
+
+  /* Hover scale */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Card shine effect */
+  .card-shine {
+    @apply relative overflow-hidden;
+  }
+
+  .card-shine::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+    background: linear-gradient(135deg, transparent 40%, hsl(var(--primary) / 0.1) 50%, transparent 60%);
+  }
+
+  .card-shine:hover::after {
+    @apply opacity-100;
   }
 }
