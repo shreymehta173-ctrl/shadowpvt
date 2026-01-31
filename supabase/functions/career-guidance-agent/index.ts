@@ -38,7 +38,47 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Verify Authorization header
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized: Missing or invalid authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate JWT token and get user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    
+    if (userError || !user) {
+      console.error("JWT validation error:", userError);
+      return new Response(JSON.stringify({ error: "Unauthorized: Invalid token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = user.id;
+
     const { action, student_id, career_id, message, language = "English", chat_history = [] } = await req.json();
+
+    // Verify the student_id belongs to the authenticated user
+    const { data: studentProfile, error: profileError } = await supabaseClient
+      .from("student_profiles")
+      .select("id")
+      .eq("id", student_id)
+      .eq("user_id", userId)
+      .single();
+
+    if (profileError || !studentProfile) {
+      console.error("Profile authorization error:", profileError);
+      return new Response(JSON.stringify({ error: "Forbidden: You do not have access to this student profile" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     switch (action) {
       case "get_recommendations":
