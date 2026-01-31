@@ -46,6 +46,8 @@ interface CareerResult {
 interface CareerResultsDashboardProps {
   answers: AssessmentAnswers;
   scores: ScoreDimensions;
+  completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce';
+  stream?: string;
   onRetake: () => void;
   onChatWithMentor: () => void;
 }
@@ -65,7 +67,9 @@ const dimensionLabels: Record<keyof ScoreDimensions, string> = {
 
 export function CareerResultsDashboard({ 
   answers, 
-  scores, 
+  scores,
+  completedClass,
+  stream,
   onRetake, 
   onChatWithMentor 
 }: CareerResultsDashboardProps) {
@@ -74,12 +78,13 @@ export function CareerResultsDashboard({
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    if (answers.completedClass) {
-      const careers = getCareerPathsForClass(answers.completedClass);
-      const scored = calculateCareerScores(scores, careers);
-      setResults(scored);
-    }
-  }, [answers.completedClass, scores]);
+    // Map to internal format for career lookup
+    const mappedClass = completedClass === 'after_10th' ? '10th' :
+      completedClass === 'after_12th_science' ? '12th_science' : '12th_commerce';
+    const careers = getCareerPathsForClass(mappedClass);
+    const scored = calculateCareerScores(scores, careers);
+    setResults(scored);
+  }, [completedClass, scores]);
 
   const topMatch = results[0];
   const alternatives = results.slice(1, 3);

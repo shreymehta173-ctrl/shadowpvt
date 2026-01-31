@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
 
     const userId = user.id;
 
-    const { action, student_id, career_id, message, language = "English", chat_history = [] } = await req.json();
+    const { action, student_id, career_id, message, language = "English", chat_history = [], assessment_context } = await req.json();
 
     // Verify the student_id belongs to the authenticated user
     const { data: studentProfile, error: profileError } = await supabaseClient
@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
       case "get_career_detail":
         return await getCareerDetail(supabaseClient, student_id, career_id, language);
       case "chat":
-        return await handleChat(supabaseClient, student_id, message, language, chat_history);
+        return await handleChat(supabaseClient, student_id, message, language, chat_history, assessment_context);
       default:
         return new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 400,
@@ -389,7 +389,29 @@ async function handleChat(
   studentId: string, 
   message: string, 
   language: string,
-  chatHistory: Array<{ role: string; content: string }>
+  chatHistory: Array<{ role: string; content: string }>,
+  assessmentContext?: {
+    completed_class: string;
+    stream?: string;
+    scores: Record<string, number>;
+    career_matches: Array<{
+      name: string;
+      matchScore: number;
+      description: string;
+      educationPath?: string[];
+      entranceExams?: string[];
+      salaryRange?: string;
+      growthOutlook?: string;
+      reasons?: string[];
+    }>;
+    top_career?: {
+      name: string;
+      matchScore: number;
+      description: string;
+      educationPath?: string[];
+      reasons?: string[];
+    };
+  }
 ) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) {
@@ -407,81 +429,132 @@ async function handleChat(
     .eq("id", studentId)
     .single();
 
-  // Fetch learning gaps
-  const { data: learningGaps } = await supabaseClient
-    .from("learning_gaps")
-    .select("*, concepts(*), skills(*)")
-    .eq("student_id", studentId)
-    .is("resolved_at", null)
-    .limit(5);
-
-  // Fetch skill progress
-  const { data: skillProgress } = await supabaseClient
-    .from("skill_progress")
-    .select("*, skills(*)")
-    .eq("student_id", studentId)
-    .limit(5);
-
-  // Fetch career recommendations
-  const { data: recommendations } = await supabaseClient
-    .from("career_recommendations")
-    .select("*, careers(*)")
-    .eq("student_id", studentId)
-    .order("match_score", { ascending: false })
-    .limit(5);
-
-  // Build rich context
-  const careerContext = recommendations
-    ?.map((r: any) => `${r.careers?.name} (${r.match_score}% match)`)
-    .join(", ") || "No career matches yet";
-
-  const gapsContext = learningGaps
-    ?.map((g: any) => `${g.concepts?.name || g.skills?.name} (${g.severity})`)
-    .join(", ") || "No gaps identified";
-
-  const skillsContext = skillProgress
-    ?.map((s: any) => `${s.skills?.name}: ${s.current_level}`)
-    .join(", ") || "No skills assessed yet";
+  // Build pathway-specific context
+  let pathwayContext = "";
+  let careerContext = "";
+  let strengthsContext = "";
+  
+  if (assessmentContext) {
+    // Determine pathway label
+    const pathwayLabel = assessmentContext.completed_class === 'after_10th' 
+      ? 'After 10th Standard' 
+      : assessmentContext.completed_class === 'after_12th_science'
+        ? `After 12th Science (${assessmentContext.stream || 'General'})`
+        : 'After 12th Commerce';
+    
+    pathwayContext = `Assessment Type: ${pathwayLabel}`;
+    
+    // Build career recommendations context
+    if (assessmentContext.career_matches && assessmentContext.career_matches.length > 0) {
+      careerContext = assessmentContext.career_matches
+        .map((c, i) => {
+          const details = [
+            `${i + 1}. ${c.name} (${c.matchScore}% match)`,
+            `   Description: ${c.description}`,
+            c.educationPath ? `   Education Path: ${c.educationPath.join(' → ')}` : '',
+            c.entranceExams ? `   Entrance Exams: ${c.entranceExams.join(', ')}` : '',
+            c.salaryRange ? `   Salary Range: ${c.salaryRange}` : '',
+            c.growthOutlook ? `   Growth: ${c.growthOutlook}` : '',
+            c.reasons ? `   Fit Reasons: ${c.reasons.join(', ')}` : '',
+          ].filter(Boolean).join('\n');
+          return details;
+        })
+        .join('\n\n');
+    }
+    
+    // Build strengths context from scores
+    if (assessmentContext.scores) {
+      const dimensionLabels: Record<string, string> = {
+        technical_orientation: 'Technical Aptitude',
+        biological_orientation: 'Life Sciences Interest',
+        data_orientation: 'Analytical Thinking',
+        creative_orientation: 'Creativity',
+        business_orientation: 'Business Acumen',
+        financial_orientation: 'Financial Aptitude',
+        social_orientation: 'People Skills',
+        hands_on_orientation: 'Practical Skills',
+        pressure_tolerance: 'Stress Resilience',
+        exam_tolerance: 'Exam Readiness',
+      };
+      
+      const sortedScores = Object.entries(assessmentContext.scores)
+        .sort(([,a], [,b]) => b - a);
+      
+      const topStrengths = sortedScores.slice(0, 3)
+        .map(([key, value]) => `${dimensionLabels[key] || key}: ${Math.round((value / 15) * 100)}%`)
+        .join(', ');
+      
+      const areasToImprove = sortedScores.slice(-2)
+        .map(([key, value]) => `${dimensionLabels[key] || key}: ${Math.round((value / 15) * 100)}%`)
+        .join(', ');
+      
+      strengthsContext = `Top Strengths: ${topStrengths}\nAreas for Growth: ${areasToImprove}`;
+    }
+  } else {
+    // Fallback to database-based recommendations
+    const { data: recommendations } = await supabaseClient
+      .from("career_recommendations")
+      .select("*, careers(*)")
+      .eq("student_id", studentId)
+      .order("match_score", { ascending: false })
+      .limit(5);
+    
+    careerContext = recommendations
+      ?.map((r: any) => `${r.careers?.name} (${r.match_score}% match)`)
+      .join(", ") || "No career matches yet";
+  }
 
   const systemPrompt = language === "Hindi"
-    ? `आप एक अनुभवी और सहायक करियर सलाहकार AI हैं जिसका नाम "करियर मेंटर" है।
+    ? `आप PrepMate by Team Shadow के एक अनुभवी और सहायक करियर सलाहकार AI हैं जिसका नाम "करियर मेंटर" है।
 
 **छात्र प्रोफाइल:**
 - नाम: ${profile?.display_name || "छात्र"}
 - कक्षा: ${profile?.grade || "अज्ञात"}
+${pathwayContext ? `- ${pathwayContext}` : ''}
 - रुचियां: ${profile?.interests?.join(", ") || "अभी तक निर्दिष्ट नहीं"}
 - सीखने की गति: ${profile?.learning_speed || "औसत"}
 
-**वर्तमान स्थिति:**
-- शीर्ष करियर मिलान: ${careerContext}
-- पहचाने गए सुधार क्षेत्र: ${gapsContext}
-- कौशल प्रगति: ${skillsContext}
+**मूल्यांकन के आधार पर करियर सिफारिशें:**
+${careerContext || 'कोई सिफारिश उपलब्ध नहीं'}
 
-**निर्देश:**
+${strengthsContext ? `**प्रोफाइल ताकत:**\n${strengthsContext}` : ''}
+
+**आपकी जिम्मेदारियां:**
+- छात्र के मूल्यांकन परिणामों के आधार पर व्यक्तिगत मार्गदर्शन दें
+- After 10th: Science/Commerce/Arts/Diploma के बीच चुनाव में मदद करें
+- After 12th Science: Engineering/Medical/Data Science/Design/Research में मार्गदर्शन दें
+- After 12th Commerce: CA/CS/MBA/Marketing/Finance में सलाह दें
+- एंट्रेंस एग्जाम, तैयारी रणनीति, और समयसीमा के बारे में बताएं
+- भारतीय शिक्षा प्रणाली के संदर्भ में सलाह दें
 - हमेशा हिंदी में जवाब दें
 - व्यक्तिगत, प्रेरक और सहायक बनें
-- विशिष्ट, क्रियाशील सलाह दें
-- जहां उपयुक्त हो, बुलेट पॉइंट और फॉर्मेटिंग का उपयोग करें
-- छात्र की प्रगति की प्रशंसा करें`
-    : `You are an experienced and supportive career advisor AI named "Career Mentor".
+- विशिष्ट, क्रियाशील सलाह दें`
+    : `You are an experienced and supportive career advisor AI named "Career Mentor" from PrepMate by Team Shadow.
 
 **Student Profile:**
 - Name: ${profile?.display_name || "Student"}
 - Grade: ${profile?.grade || "Not specified"}
+${pathwayContext ? `- ${pathwayContext}` : ''}
 - Interests: ${profile?.interests?.join(", ") || "Not yet specified"}
 - Learning pace: ${profile?.learning_speed || "average"}
 
-**Current Status:**
-- Top career matches: ${careerContext}
-- Identified improvement areas: ${gapsContext}
-- Skill progress: ${skillsContext}
+**Career Recommendations from Assessment:**
+${careerContext || 'No recommendations available'}
 
-**Instructions:**
-- Be personalized, encouraging, and helpful
-- Provide specific, actionable advice
-- Use bullet points and formatting where appropriate
-- Acknowledge the student's progress and efforts
-- If asked about specific careers, reference their match scores`;
+${strengthsContext ? `**Profile Strengths:**\n${strengthsContext}` : ''}
+
+**Your Responsibilities:**
+- Provide personalized guidance based on the student's assessment results
+- For After 10th students: Help choose between Science/Commerce/Arts/Diploma streams
+- For After 12th Science: Guide towards Engineering/Medical/Data Science/Design/Research paths
+- For After 12th Commerce: Advise on CA/CS/MBA/Marketing/Finance careers
+- Explain entrance exams, preparation strategies, and timelines specific to Indian education
+- JEE, NEET, CAT, CA Foundation, CLAT - provide exam-specific guidance
+- Discuss salary ranges, job prospects, and growth outlook realistically
+- Be personalized, encouraging, and provide specific actionable advice
+- Use bullet points and formatting for clarity
+- If asked about careers outside their pathway, explain the transition possibilities
+- Always ground your advice in their assessment results and match scores`;
 
   try {
     // Build messages array with history
@@ -503,7 +576,7 @@ async function handleChat(
       body: JSON.stringify({
         model: DEFAULT_MODEL,
         messages,
-        max_tokens: 800,
+        max_tokens: 1000,
       }),
     });
 

@@ -2,6 +2,16 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { ScoreDimensions } from '@/data/assessmentQuestions';
+import { CareerPath } from '@/data/careerGroups';
+
+// Career result with match score (output from scoring engine)
+export interface CareerMatchResult {
+  career: CareerPath;
+  score: number;
+  confidence: number;
+  reasons: string[];
+}
 
 export interface CareerRecommendation {
   career_id: string;
@@ -38,12 +48,21 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface AssessmentContext {
+  completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce';
+  stream?: string; // For 12th Science: PCM, PCB, PCMB
+  scores: ScoreDimensions;
+  careerMatches: CareerMatchResult[];
+  topCareer: CareerMatchResult | null;
+}
+
 export function useCareerGuidance() {
   const { profile } = useAuth();
   const [recommendations, setRecommendations] = useState<CareerRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [assessmentContext, setAssessmentContext] = useState<AssessmentContext | null>(null);
 
   const fetchRecommendations = useCallback(async (language: string = 'English') => {
     if (!profile?.id) return;
@@ -90,7 +109,11 @@ export function useCareerGuidance() {
     }
   }, [profile?.id]);
 
-  const sendChatMessage = useCallback(async (message: string, language: string = 'English') => {
+  const sendChatMessage = useCallback(async (
+    message: string, 
+    language: string = 'English',
+    context?: AssessmentContext
+  ) => {
     if (!profile?.id) return;
 
     const userMessage: ChatMessage = {
@@ -102,6 +125,9 @@ export function useCareerGuidance() {
 
     setChatMessages(prev => [...prev, userMessage]);
     setChatLoading(true);
+
+    // Use provided context or stored context
+    const activeContext = context || assessmentContext;
 
     try {
       // Build chat history for context
@@ -117,6 +143,28 @@ export function useCareerGuidance() {
           message,
           language,
           chat_history: chatHistory,
+          assessment_context: activeContext ? {
+            completed_class: activeContext.completedClass,
+            stream: activeContext.stream,
+            scores: activeContext.scores,
+            career_matches: activeContext.careerMatches.slice(0, 5).map(c => ({
+              name: c.career.name,
+              matchScore: c.score,
+              description: c.career.description,
+              educationPath: c.career.educationPath,
+              entranceExams: c.career.entranceExams,
+              salaryRange: c.career.salaryRange,
+              growthOutlook: c.career.growthOutlook,
+              reasons: c.reasons,
+            })),
+            top_career: activeContext.topCareer ? {
+              name: activeContext.topCareer.career.name,
+              matchScore: activeContext.topCareer.score,
+              description: activeContext.topCareer.career.description,
+              educationPath: activeContext.topCareer.career.educationPath,
+              reasons: activeContext.topCareer.reasons,
+            } : null,
+          } : null,
         },
       });
 
@@ -150,10 +198,14 @@ export function useCareerGuidance() {
     } finally {
       setChatLoading(false);
     }
-  }, [profile?.id, chatMessages]);
+  }, [profile?.id, chatMessages, assessmentContext]);
 
   const clearChat = useCallback(() => {
     setChatMessages([]);
+  }, []);
+
+  const updateAssessmentContext = useCallback((context: AssessmentContext) => {
+    setAssessmentContext(context);
   }, []);
 
   return {
@@ -161,10 +213,12 @@ export function useCareerGuidance() {
     loading,
     chatMessages,
     chatLoading,
+    assessmentContext,
     fetchRecommendations,
     getCareerDetail,
     sendChatMessage,
     setChatMessages,
     clearChat,
+    updateAssessmentContext,
   };
 }
