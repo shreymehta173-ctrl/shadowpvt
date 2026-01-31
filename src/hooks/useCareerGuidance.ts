@@ -2,8 +2,11 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { ScoreDimensions } from '@/data/assessmentQuestions';
+import { TraitDimensions } from '@/data/assessmentQuestions';
 import { CareerPath } from '@/data/careerGroups';
+
+// Type alias for backward compatibility
+type ScoreDimensions = TraitDimensions;
 
 // Career result with match score (output from scoring engine)
 export interface CareerMatchResult {

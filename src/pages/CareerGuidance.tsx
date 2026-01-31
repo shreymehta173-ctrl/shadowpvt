@@ -8,14 +8,14 @@ import { FullscreenChatDialog } from '@/components/career/FullscreenChatDialog';
 import { useCareerGuidance, ChatMessage, AssessmentContext, CareerMatchResult } from '@/hooks/useCareerGuidance';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { ScoreDimensions } from '@/data/assessmentQuestions';
-import { getCareerPathsForClass, calculateCareerScores } from '@/data/careerGroups';
+import { TraitDimensions } from '@/data/assessmentQuestions';
+import { getCareerPathsForClass, calculateCareerScores, getTraitProfileSummary } from '@/data/careerGroups';
 
 type ViewState = 'assessment' | 'results' | 'chat';
 
 interface StoredAssessmentData {
   answers: AssessmentAnswers;
-  scores: ScoreDimensions;
+  scores: TraitDimensions;
   completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce';
   stream?: string;
 }
@@ -68,7 +68,7 @@ export default function CareerGuidance() {
   // Check if user has already completed assessment (stored in localStorage)
   useEffect(() => {
     if (profile?.id) {
-      const storedData = localStorage.getItem(`career_assessment_v2_${profile.id}`);
+      const storedData = localStorage.getItem(`career_assessment_v3_${profile.id}`);
       if (storedData) {
         try {
           const parsed = JSON.parse(storedData);
@@ -83,7 +83,7 @@ export default function CareerGuidance() {
 
   const handleAssessmentComplete = useCallback((
     answers: AssessmentAnswers, 
-    scores: ScoreDimensions,
+    scores: TraitDimensions,
     completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce',
     stream?: string
   ) => {
@@ -93,7 +93,7 @@ export default function CareerGuidance() {
     
     // Store in localStorage
     if (profile?.id) {
-      localStorage.setItem(`career_assessment_v2_${profile.id}`, JSON.stringify(data));
+      localStorage.setItem(`career_assessment_v3_${profile.id}`, JSON.stringify(data));
     }
   }, [profile?.id]);
 
@@ -104,7 +104,7 @@ export default function CareerGuidance() {
     
     // Clear from localStorage
     if (profile?.id) {
-      localStorage.removeItem(`career_assessment_v2_${profile.id}`);
+      localStorage.removeItem(`career_assessment_v3_${profile.id}`);
     }
   }, [profile?.id, clearChat]);
 
@@ -119,8 +119,11 @@ export default function CareerGuidance() {
           ? `After 12th Science (${assessmentContext.stream || 'General'})`
           : 'After 12th Commerce';
       
-      const topCareerName = assessmentContext.topCareer?.career.name || 'your recommended career';
+      const topCareerName = assessmentContext.topCareer?.career.name || 'your recommended path';
       const topCareerScore = assessmentContext.topCareer?.score || 0;
+      
+      // Get trait profile summary
+      const traitProfile = getTraitProfileSummary(assessmentContext.scores);
       
       const introMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -128,31 +131,29 @@ export default function CareerGuidance() {
         content: language === 'English' 
           ? `Hi ${profile?.display_name || 'there'}! 👋 I'm your AI Career Mentor from PrepMate.
 
-I've analyzed your **${pathwayLabel}** assessment results. Your top match is **${topCareerName}** with a ${topCareerScore}% compatibility score.
+I've analyzed your **${pathwayLabel}** behavioral assessment. Your top match is **${topCareerName}** with a ${topCareerScore}% compatibility score.
 
-Based on your profile strengths:
-• **Technical**: ${Math.round(assessmentContext.scores.technical_orientation)}%
-• **Creative**: ${Math.round(assessmentContext.scores.creative_orientation)}%
-• **Business**: ${Math.round(assessmentContext.scores.business_orientation)}%
-• **Pressure Tolerance**: ${Math.round(assessmentContext.scores.pressure_tolerance)}%
+**Your Behavioral Profile:**
+• **Dominant Traits**: ${traitProfile.dominant.join(', ')}
+• **Work Style**: ${traitProfile.workStyle}
+• **Learning Style**: ${traitProfile.learningStyle}
 
 I can help you with:
-• Understanding your career options and their requirements
-• Education paths, entrance exams, and preparation strategies
-• Salary expectations and growth prospects
-• Personalized roadmap to achieve your goals
+• Understanding what each path involves and if it suits you
+• Education routes and entrance requirements
+• Real-life scenarios from different career paths
+• Building a personalized roadmap
 
 What would you like to explore first?`
           : `नमस्ते ${profile?.display_name || ''}! 👋 मैं PrepMate से आपका AI करियर मेंटर हूं।
 
-मैंने आपके **${pathwayLabel}** मूल्यांकन परिणामों का विश्लेषण किया है। आपका सबसे अच्छा मैच **${topCareerName}** है जिसमें ${topCareerScore}% अनुकूलता है।
+मैंने आपके **${pathwayLabel}** व्यवहारिक मूल्यांकन का विश्लेषण किया है। आपका सबसे अच्छा मैच **${topCareerName}** है (${topCareerScore}% अनुकूलता)।
 
-आपकी प्रोफाइल ताकत:
-• **टेक्निकल**: ${Math.round(assessmentContext.scores.technical_orientation)}%
-• **क्रिएटिव**: ${Math.round(assessmentContext.scores.creative_orientation)}%
-• **बिजनेस**: ${Math.round(assessmentContext.scores.business_orientation)}%
+**आपकी व्यवहारिक प्रोफाइल:**
+• **मुख्य गुण**: ${traitProfile.dominant.join(', ')}
+• **कार्य शैली**: ${traitProfile.workStyle}
 
-मुझसे कुछ भी पूछें - करियर विकल्प, एंट्रेंस एग्जाम, या तैयारी की रणनीति!`,
+मुझसे कुछ भी पूछें - करियर विकल्प, शिक्षा मार्ग, या तैयारी की रणनीति!`,
         timestamp: new Date(),
       };
       setChatMessages([introMessage]);
@@ -170,7 +171,7 @@ What would you like to explore first?`
 
   return (
     <AppLayout>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         {view === 'assessment' && (
           <CareerAssessment onComplete={handleAssessmentComplete} />
         )}

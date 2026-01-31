@@ -1,670 +1,381 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { 
-  Trophy, 
-  Star, 
-  TrendingUp, 
-  BookOpen, 
-  ArrowRight,
-  RefreshCw,
+  RotateCcw,
   MessageCircle,
   Download,
-  FileText,
-  FileSpreadsheet,
-  ChevronDown,
-  ChevronUp,
-  GraduationCap,
+  Award,
+  TrendingUp,
   Briefcase,
-  IndianRupee,
+  GraduationCap,
+  Sparkles,
+  ChevronRight,
+  User,
+  Brain,
   Target,
-  AlertTriangle,
-  BarChart3,
-  CheckCircle2
+  BookOpen,
 } from 'lucide-react';
-import { toast } from 'sonner';
+import prepmateLogo from '@/assets/prepmate-logo.png';
 import { AssessmentAnswers } from './CareerAssessment';
-import { ScoreDimensions, getQuestionsForClass } from '@/data/assessmentQuestions';
-import { CareerPath, getCareerPathsForClass, calculateCareerScores } from '@/data/careerGroups';
-
-interface CareerResult {
-  career: CareerPath;
-  score: number;
-  confidence: number;
-  reasons: string[];
-}
+import { TraitDimensions } from '@/data/assessmentQuestions';
+import { 
+  getCareerPathsForClass, 
+  calculateCareerScores, 
+  getTraitProfileSummary 
+} from '@/data/careerGroups';
 
 interface CareerResultsDashboardProps {
   answers: AssessmentAnswers;
-  scores: ScoreDimensions;
+  scores: TraitDimensions;
   completedClass: 'after_10th' | 'after_12th_science' | 'after_12th_commerce';
   stream?: string;
   onRetake: () => void;
   onChatWithMentor: () => void;
 }
 
-const dimensionLabels: Record<keyof ScoreDimensions, string> = {
-  technical_orientation: 'Technical',
-  biological_orientation: 'Life Sciences',
-  data_orientation: 'Analytical',
-  creative_orientation: 'Creative',
-  business_orientation: 'Business',
-  financial_orientation: 'Finance',
-  social_orientation: 'Social',
-  hands_on_orientation: 'Practical',
-  pressure_tolerance: 'Stress Resilience',
-  exam_tolerance: 'Exam Readiness',
+// Trait display configuration
+const traitConfig: Record<keyof TraitDimensions, { label: string; icon: string }> = {
+  analytical_reasoning: { label: 'Analytical Thinking', icon: '🧮' },
+  system_thinking: { label: 'Systems Thinking', icon: '⚙️' },
+  people_involvement: { label: 'People-Oriented', icon: '👥' },
+  persuasion_influence: { label: 'Influential', icon: '📢' },
+  creative_expression: { label: 'Creative', icon: '🎨' },
+  visual_thinking: { label: 'Visual Thinker', icon: '👁️' },
+  precision_orientation: { label: 'Detail-Focused', icon: '🎯' },
+  risk_appetite: { label: 'Risk Comfort', icon: '🎲' },
+  learning_depth_tolerance: { label: 'Deep Learner', icon: '📚' },
+  ambiguity_tolerance: { label: 'Adaptable', icon: '🌊' },
+  execution_drive: { label: 'Action-Oriented', icon: '⚡' },
+  planning_drive: { label: 'Strategic Planner', icon: '📋' },
 };
 
-export function CareerResultsDashboard({ 
-  answers, 
+export function CareerResultsDashboard({
+  answers,
   scores,
   completedClass,
   stream,
-  onRetake, 
-  onChatWithMentor 
+  onRetake,
+  onChatWithMentor,
 }: CareerResultsDashboardProps) {
-  const [results, setResults] = useState<CareerResult[]>([]);
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('overview');
-
-  useEffect(() => {
-    // Map to internal format for career lookup
-    const mappedClass = completedClass === 'after_10th' ? '10th' :
+  // Calculate career matches
+  const careerMatches = useMemo(() => {
+    const classKey = completedClass === 'after_10th' ? '10th' :
       completedClass === 'after_12th_science' ? '12th_science' : '12th_commerce';
-    const careers = getCareerPathsForClass(mappedClass);
-    const scored = calculateCareerScores(scores, careers);
-    setResults(scored);
-  }, [completedClass, scores]);
+    const careers = getCareerPathsForClass(classKey);
+    return calculateCareerScores(scores, careers);
+  }, [scores, completedClass]);
 
-  const topMatch = results[0];
-  const alternatives = results.slice(1, 3);
-  const otherOptions = results.slice(3);
+  // Get trait profile
+  const traitProfile = useMemo(() => getTraitProfileSummary(scores), [scores]);
 
-  // Calculate max score for normalization
-  const maxDimensionScore = Math.max(...Object.values(scores), 1);
+  // Sort traits by score for display
+  const sortedTraits = useMemo(() => {
+    return Object.entries(scores)
+      .map(([key, value]) => ({
+        key: key as keyof TraitDimensions,
+        value,
+        ...traitConfig[key as keyof TraitDimensions],
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [scores]);
 
-  // Generate PDF Report
-  const downloadAsPDF = useCallback(() => {
-    const reportDate = new Date().toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+  // Max score for normalization
+  const maxTraitScore = Math.max(...Object.values(scores), 1);
 
-    const questions = answers.completedClass ? getQuestionsForClass(answers.completedClass) : [];
-    const answeredQuestions = questions.map((q, index) => {
-      const response = answers.responses[q.id];
-      const selectedOption = q.options.find(opt => opt.value === response);
-      return {
-        number: index + 1,
-        question: q.question,
-        answer: selectedOption?.label || 'Not answered',
-      };
-    });
+  const topMatch = careerMatches[0];
+  const alternatives = careerMatches.slice(1, 4);
 
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>PrepMate Career Assessment Report</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { 
-      font-family: 'Segoe UI', Tahoma, sans-serif; 
-      max-width: 850px; 
-      margin: 0 auto; 
-      padding: 40px; 
-      color: #1e293b; 
-      background: #f8fafc;
-      line-height: 1.6;
-    }
-    
-    .header {
-      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 50%, #0d9488 100%);
-      color: white;
-      padding: 40px;
-      border-radius: 16px;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .header h1 { font-size: 32px; margin: 0 0 8px; }
-    .header p { margin: 0; opacity: 0.9; font-size: 14px; }
-    
-    .section {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      border: 1px solid #e2e8f0;
-    }
-    
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #3730a3;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .disclaimer {
-      background: #fef3c7;
-      border: 1px solid #f59e0b;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .disclaimer-title { font-weight: 600; color: #92400e; }
-    .disclaimer-text { color: #78350f; font-size: 14px; }
-    
-    .top-match {
-      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-      border: 2px solid #4f46e5;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 16px;
-    }
-    
-    .match-score {
-      font-size: 48px;
-      font-weight: 800;
-      color: #4f46e5;
-    }
-    
-    .career-card {
-      padding: 16px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-    
-    .score-bar {
-      background: #e2e8f0;
-      border-radius: 4px;
-      height: 8px;
-      margin-top: 4px;
-    }
-    
-    .score-fill {
-      background: linear-gradient(90deg, #4f46e5, #0d9488);
-      border-radius: 4px;
-      height: 100%;
-    }
-    
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    
-    .qa-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
-    .qa-question { font-weight: 600; color: #475569; margin-bottom: 4px; }
-    .qa-answer { color: #1e293b; }
-    
-    .footer {
-      text-align: center;
-      padding: 24px;
-      color: #64748b;
-      font-size: 12px;
-    }
-    
-    @media print { body { background: white; } }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>🎓 PrepMate Career Assessment Report</h1>
-    <p>Shape Your Future, Plan Your Success</p>
-    <p style="margin-top: 16px; font-size: 12px; opacity: 0.8;">by Team Shadow • Generated on ${reportDate}</p>
-  </div>
-  
-  <div class="disclaimer">
-    <div class="disclaimer-title">⚠️ Important Disclaimer</div>
-    <div class="disclaimer-text">
-      This assessment is a decision support tool. Results should be discussed with parents, teachers, 
-      and career counselors before making important academic decisions.
-    </div>
-  </div>
-  
-  <div class="section">
-    <div class="section-title">📊 Assessment Summary</div>
-    <div class="grid-2">
-      <div>
-        <strong>Assessment Type:</strong><br>
-        ${answers.completedClass === '10th' ? 'After 10th Standard' : 
-          answers.completedClass === '12th_science' ? `After 12th Science (${answers.stream12th})` :
-          'After 12th Commerce'}
-      </div>
-      <div>
-        <strong>Questions Answered:</strong> ${Object.keys(answers.responses).length} / 15
-      </div>
-    </div>
-  </div>
-  
-  <div class="section">
-    <div class="section-title">🏆 Top Career Recommendation</div>
-    ${topMatch ? `
-    <div class="top-match">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h3 style="margin: 0; font-size: 24px;">${topMatch.career.icon} ${topMatch.career.name}</h3>
-          <p style="color: #64748b; margin: 8px 0;">${topMatch.career.category}</p>
-        </div>
-        <div class="match-score">${topMatch.score}%</div>
-      </div>
-      <p style="margin-top: 16px;">${topMatch.career.description}</p>
-      <div style="margin-top: 16px;">
-        <strong>Why this fits you:</strong>
-        <ul style="margin: 8px 0; padding-left: 20px;">
-          ${topMatch.reasons.map(r => `<li>${r}</li>`).join('')}
-        </ul>
-      </div>
-      <div class="grid-2" style="margin-top: 16px;">
-        <div><strong>Salary Range:</strong> ${topMatch.career.salaryRange}</div>
-        <div><strong>Growth:</strong> ${topMatch.career.growthOutlook}</div>
-      </div>
-    </div>
-    ` : ''}
-    
-    <h4 style="margin-top: 24px;">Alternative Paths</h4>
-    ${alternatives.map(r => `
-    <div class="career-card">
-      <div style="display: flex; justify-content: space-between;">
-        <span><strong>${r.career.icon} ${r.career.name}</strong></span>
-        <span style="color: #4f46e5; font-weight: 600;">${r.score}%</span>
-      </div>
-      <p style="font-size: 14px; color: #64748b; margin: 8px 0;">${r.career.description}</p>
-    </div>
-    `).join('')}
-  </div>
-  
-  <div class="section">
-    <div class="section-title">📈 Your Profile Strengths</div>
-    <div class="grid-2">
-      ${Object.entries(scores)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 6)
-        .map(([key, value]) => `
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; font-size: 14px;">
-            <span>${dimensionLabels[key as keyof ScoreDimensions]}</span>
-            <span style="font-weight: 600;">${value}</span>
-          </div>
-          <div class="score-bar">
-            <div class="score-fill" style="width: ${Math.min((value / 15) * 100, 100)}%"></div>
-          </div>
-        </div>
-        `).join('')}
-    </div>
-  </div>
-  
-  <div class="section">
-    <div class="section-title">📝 Complete Question History</div>
-    ${answeredQuestions.map(qa => `
-    <div class="qa-item">
-      <div class="qa-question">Q${qa.number}. ${qa.question}</div>
-      <div class="qa-answer">→ ${qa.answer}</div>
-    </div>
-    `).join('')}
-  </div>
-  
-  <div class="footer">
-    <p>PrepMate by Team Shadow • Shape Your Future, Plan Your Success</p>
-    <p>This report is confidential and for educational purposes only.</p>
-  </div>
-</body>
-</html>`;
+  const handleExportPDF = () => {
+    const content = `
+PrepMate Career Assessment Report
+===================================
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+Assessment Type: ${completedClass === 'after_10th' ? 'After 10th' : completedClass === 'after_12th_science' ? `After 12th Science (${stream})` : 'After 12th Commerce'}
+
+BEHAVIORAL PROFILE
+==================
+Dominant Traits: ${traitProfile.dominant.join(', ')}
+Work Style: ${traitProfile.workStyle}
+Learning Style: ${traitProfile.learningStyle}
+
+TOP RECOMMENDATION
+==================
+${topMatch?.career.name} (${topMatch?.score}% match)
+${topMatch?.career.description}
+
+Why this suits you: ${topMatch?.reasons.join(', ')}
+
+ALTERNATIVE PATHS
+==================
+${alternatives.map((match, i) => `${i + 1}. ${match.career.name} (${match.score}% match)`).join('\n')}
+
+---
+Generated by PrepMate - Shape Your Career Path
+This is a guidance tool. Please discuss with counselors before making decisions.
+    `;
+
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `PrepMate_Career_Report_${new Date().toISOString().split('T')[0]}.html`;
-    document.body.appendChild(a);
+    a.download = 'PrepMate_Career_Report.txt';
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success('Report downloaded! Open in browser and print as PDF.');
-  }, [answers, scores, topMatch, alternatives]);
-
-  // Generate CSV
-  const downloadAsCSV = useCallback(() => {
-    const questions = answers.completedClass ? getQuestionsForClass(answers.completedClass) : [];
-    
-    let csv = 'PrepMate Career Assessment Report\n';
-    csv += `Assessment Type,${answers.completedClass === '10th' ? 'After 10th' : answers.completedClass === '12th_science' ? `After 12th Science (${answers.stream12th})` : 'After 12th Commerce'}\n`;
-    csv += `Generated,${new Date().toLocaleString()}\n\n`;
-    
-    csv += 'CAREER RECOMMENDATIONS\n';
-    csv += 'Rank,Career,Category,Match Score,Growth,Salary Range\n';
-    results.forEach((r, i) => {
-      csv += `${i + 1},"${r.career.name}","${r.career.category}",${r.score}%,${r.career.growthOutlook},"${r.career.salaryRange}"\n`;
-    });
-    
-    csv += '\nPROFILE DIMENSIONS\n';
-    csv += 'Dimension,Score\n';
-    Object.entries(scores).forEach(([key, value]) => {
-      csv += `"${dimensionLabels[key as keyof ScoreDimensions]}",${value}\n`;
-    });
-    
-    csv += '\nQUESTION RESPONSES\n';
-    csv += 'Question,Response\n';
-    questions.forEach((q, i) => {
-      const response = answers.responses[q.id];
-      const selectedOption = q.options.find(opt => opt.value === response);
-      csv += `"Q${i + 1}. ${q.question}","${selectedOption?.label || 'Not answered'}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `PrepMate_Report_${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success('CSV report downloaded!');
-  }, [answers, scores, results]);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Badge variant="outline" className="mb-4 bg-white">
-            Assessment Complete
-          </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-            Your Career Recommendations
-          </h1>
-          <p className="text-slate-600">
-            Based on your responses, here are the paths that align best with your profile
-          </p>
-        </div>
-
-        {/* Disclaimer */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <img src={prepmateLogo} alt="PrepMate" className="h-12 w-auto" />
             <div>
-              <p className="text-sm font-medium text-amber-800">Decision Support Tool</p>
-              <p className="text-sm text-amber-700">
-                These recommendations are based on your assessment responses. Discuss with parents, 
-                teachers, and counselors before making academic decisions.
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                Your Career Discovery Results
+              </h1>
+              <p className="text-muted-foreground">
+                {completedClass === 'after_10th' ? 'After 10th Assessment' : 
+                 completedClass === 'after_12th_science' ? `After 12th Science (${stream})` : 
+                 'After 12th Commerce Assessment'}
               </p>
             </div>
           </div>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={handleExportPDF}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button variant="outline" size="sm" onClick={onRetake}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Retake
+            </Button>
+          </div>
         </div>
 
-        {/* Top Match Card */}
-        {topMatch && (
-          <Card className="mb-6 border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-white shadow-lg overflow-hidden">
-            <CardContent className="p-6 md:p-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="h-6 w-6 text-amber-500" />
-                <span className="font-semibold text-amber-700">Best Match for You</span>
-              </div>
-              
-              <div className="flex flex-col md:flex-row md:items-start gap-6">
-                <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${topMatch.career.color} flex items-center justify-center text-4xl shadow-lg shrink-0`}>
-                  {topMatch.career.icon}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h2 className="text-2xl font-bold text-slate-900">{topMatch.career.name}</h2>
-                      <p className="text-slate-600">{topMatch.career.category}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-4xl font-bold text-indigo-600">{topMatch.score}%</div>
-                      <div className="text-sm text-slate-500">match</div>
-                    </div>
-                  </div>
-                  
-                  <p className="text-slate-700 mt-4">{topMatch.career.description}</p>
-                  
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {topMatch.reasons.map((reason, i) => (
-                      <Badge key={i} variant="secondary" className="bg-indigo-100 text-indigo-700">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {reason}
+        {/* Main Grid */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Left Column - Behavioral Profile */}
+          <div className="md:col-span-1 space-y-6">
+            {/* Profile Summary Card */}
+            <Card className="border-border/50 bg-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <User className="h-5 w-5 text-primary" />
+                  Your Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Dominant Traits</p>
+                  <div className="flex flex-wrap gap-2">
+                    {traitProfile.dominant.map((trait, i) => (
+                      <Badge key={i} variant="secondary" className="bg-primary/10 text-primary">
+                        {trait}
                       </Badge>
                     ))}
                   </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-200">
-                    <div>
-                      <div className="text-xs text-slate-500 uppercase mb-1">Salary Range</div>
-                      <div className="font-semibold text-slate-900 flex items-center gap-1">
-                        <IndianRupee className="h-4 w-4" />
-                        {topMatch.career.salaryRange}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-500 uppercase mb-1">Growth</div>
-                      <div className="font-semibold text-slate-900 flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4" />
-                        {topMatch.career.growthOutlook}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-500 uppercase mb-1">Work Environment</div>
-                      <div className="font-semibold text-slate-900 text-sm">{topMatch.career.workEnvironment}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-500 uppercase mb-1">Entrance Exams</div>
-                      <div className="font-semibold text-slate-900 text-sm">
-                        {topMatch.career.entranceExams?.slice(0, 2).join(', ') || 'Various'}
-                      </div>
-                    </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Work Style</p>
+                    <p className="text-sm font-medium text-foreground">{traitProfile.workStyle}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Learning Style</p>
+                    <p className="text-sm font-medium text-foreground">{traitProfile.learningStyle}</p>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </CardContent>
+            </Card>
 
-        {/* Tabs for different views */}
-        <Tabs defaultValue="overview" className="mb-8">
-          <TabsList className="bg-white border">
-            <TabsTrigger value="overview">All Options</TabsTrigger>
-            <TabsTrigger value="profile">Your Profile</TabsTrigger>
-            <TabsTrigger value="compare">Compare</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="mt-6">
-            {/* Alternative Paths */}
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Alternative Paths</h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              {alternatives.map((result) => (
-                <Card 
-                  key={result.career.id} 
-                  className="border-slate-200 hover:border-slate-300 transition-all cursor-pointer"
-                  onClick={() => setExpandedCard(expandedCard === result.career.id ? null : result.career.id)}
-                >
-                  <CardContent className="p-5">
-                    <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${result.career.color} flex items-center justify-center text-2xl shrink-0`}>
-                        {result.career.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <h4 className="font-semibold text-slate-900 truncate">{result.career.name}</h4>
-                          <Badge variant="outline" className="shrink-0">{result.score}%</Badge>
-                        </div>
-                        <p className="text-sm text-slate-500 mt-1">{result.career.category}</p>
-                        
-                        {expandedCard === result.career.id && (
-                          <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
-                            <p className="text-sm text-slate-600">{result.career.description}</p>
-                            <div className="flex items-center gap-4 text-sm">
-                              <span className="text-slate-500">{result.career.salaryRange}</span>
-                              <span className="text-green-600">{result.career.growthOutlook} Growth</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      {expandedCard === result.career.id ? (
-                        <ChevronUp className="h-5 w-5 text-slate-400" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5 text-slate-400" />
-                      )}
+            {/* Trait Breakdown */}
+            <Card className="border-border/50 bg-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Brain className="h-5 w-5 text-primary" />
+                  Trait Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {sortedTraits.slice(0, 6).map((trait) => (
+                  <div key={trait.key} className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-foreground flex items-center gap-2">
+                        <span>{trait.icon}</span>
+                        {trait.label}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {Math.round((trait.value / maxTraitScore) * 100)}%
+                      </span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <Progress 
+                      value={(trait.value / maxTraitScore) * 100} 
+                      className="h-2 bg-muted"
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Other Options */}
-            {otherOptions.length > 0 && (
-              <>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Other Options to Consider</h3>
-                <div className="space-y-3">
-                  {otherOptions.map((result) => (
-                    <Card key={result.career.id} className="border-slate-200">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <span className="text-2xl">{result.career.icon}</span>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-slate-900">{result.career.name}</h4>
-                            <p className="text-sm text-slate-500">{result.career.category}</p>
-                          </div>
-                          <Badge variant="secondary">{result.score}%</Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </>
+          {/* Right Column - Career Results */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Top Match Card */}
+            {topMatch && (
+              <Card className="border-primary/30 bg-gradient-to-r from-primary/5 to-accent/5">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <Badge className="bg-primary/20 text-primary border-primary/30 mb-2">
+                        <Award className="h-3 w-3 mr-1" />
+                        Best Match
+                      </Badge>
+                      <CardTitle className="text-2xl text-foreground">
+                        {topMatch.career.name}
+                      </CardTitle>
+                      <CardDescription className="mt-2">
+                        {topMatch.career.description}
+                      </CardDescription>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-bold text-primary">{topMatch.score}%</div>
+                      <p className="text-xs text-muted-foreground">Compatibility</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Why This Suits You */}
+                  <div>
+                    <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      Why This Suits You
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {topMatch.reasons.map((reason, i) => (
+                        <Badge key={i} variant="outline" className="bg-card">
+                          {reason}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick Info */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border/50">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" /> Growth
+                      </p>
+                      <p className="text-sm font-medium text-foreground">{topMatch.career.growthOutlook}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <Briefcase className="h-3 w-3" /> Environment
+                      </p>
+                      <p className="text-sm font-medium text-foreground line-clamp-1">
+                        {topMatch.career.workEnvironment.split(',')[0]}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <GraduationCap className="h-3 w-3" /> Path
+                      </p>
+                      <p className="text-sm font-medium text-foreground line-clamp-1">
+                        {topMatch.career.educationPath[0]}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        💰 Salary Range
+                      </p>
+                      <p className="text-sm font-medium text-foreground">{topMatch.career.salaryRange}</p>
+                    </div>
+                  </div>
+
+                  {/* Typical Day */}
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                    <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" />
+                      A Typical Day
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{topMatch.career.typicalDay}</p>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-          </TabsContent>
 
-          <TabsContent value="profile" className="mt-6">
-            <Card className="border-slate-200">
+            {/* Alternative Paths */}
+            <Card className="border-border/50 bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-indigo-600" />
-                  Your Profile Dimensions
+                  <Target className="h-5 w-5 text-primary" />
+                  Alternative Paths to Explore
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {Object.entries(scores)
-                    .sort(([,a], [,b]) => b - a)
-                    .map(([key, value]) => (
-                      <div key={key}>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-700">
-                            {dimensionLabels[key as keyof ScoreDimensions]}
-                          </span>
-                          <span className="text-sm font-semibold text-indigo-600">{value}</span>
+                <div className="grid gap-4">
+                  {alternatives.map((match) => (
+                    <div
+                      key={match.career.id}
+                      className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-2xl">{match.career.icon}</div>
+                        <div>
+                          <h4 className="font-medium text-foreground">{match.career.name}</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {match.career.category}
+                          </p>
                         </div>
-                        <Progress 
-                          value={Math.min((value / 15) * 100, 100)} 
-                          className="h-2 bg-slate-100"
-                        />
                       </div>
-                    ))}
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="text-xl font-bold text-foreground">{match.score}%</div>
+                          <p className="text-xs text-muted-foreground">Match</p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="compare" className="mt-6">
-            <Card className="border-slate-200">
-              <CardHeader>
-                <CardTitle>Career Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-2 font-semibold">Career</th>
-                        <th className="text-center py-3 px-2 font-semibold">Match</th>
-                        <th className="text-left py-3 px-2 font-semibold">Salary</th>
-                        <th className="text-left py-3 px-2 font-semibold">Growth</th>
-                        <th className="text-left py-3 px-2 font-semibold">Exams</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {results.map((r, i) => (
-                        <tr key={r.career.id} className={i === 0 ? 'bg-indigo-50' : ''}>
-                          <td className="py-3 px-2">
-                            <div className="flex items-center gap-2">
-                              <span>{r.career.icon}</span>
-                              <span className="font-medium">{r.career.name}</span>
-                            </div>
-                          </td>
-                          <td className="text-center py-3 px-2">
-                            <Badge variant={i === 0 ? 'default' : 'secondary'}>{r.score}%</Badge>
-                          </td>
-                          <td className="py-3 px-2 text-slate-600">{r.career.salaryRange}</td>
-                          <td className="py-3 px-2 text-slate-600">{r.career.growthOutlook}</td>
-                          <td className="py-3 px-2 text-slate-600">
-                            {r.career.entranceExams?.slice(0, 2).join(', ') || '-'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            {/* Chat CTA */}
+            <Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-accent/10">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-1">
+                      Have Questions? Talk to Your AI Mentor
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Get personalized guidance on education paths, entrance exams, and career planning
+                    </p>
+                  </div>
+                  <Button onClick={onChatWithMentor} className="bg-primary hover:bg-primary/90">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Chat with Mentor
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-          <Button
-            onClick={onChatWithMentor}
-            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white gap-2"
-          >
-            <MessageCircle className="h-4 w-4" />
-            Chat with AI Mentor
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Download Report
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={downloadAsPDF}>
-                <FileText className="h-4 w-4 mr-2" />
-                Download as PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={downloadAsCSV}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Download as CSV
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button
-            variant="ghost"
-            onClick={onRetake}
-            className="gap-2 text-slate-600"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Retake Assessment
-          </Button>
+        {/* Disclaimer */}
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <p>
+            This assessment provides guidance based on behavioral analysis. 
+            Please discuss results with parents, teachers, and career counselors before making decisions.
+          </p>
         </div>
       </div>
     </div>

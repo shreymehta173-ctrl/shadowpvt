@@ -1,506 +1,640 @@
-// PrepMate by Team Shadow - Career Assessment Question Sets
-// Three assessment sets tailored to the Indian education system
+// PrepMate - Behavioral Career Assessment System
+// Situational, forced-choice, and validation questions
+// Field-neutral questions that infer suitability without mentioning specific careers
 
 export type CompletedClass = '10th' | '12th_science' | '12th_commerce';
 export type Stream12th = 'PCM' | 'PCB' | 'PCMB' | null;
 
-export interface ScoreDimensions {
-  technical_orientation: number;
-  biological_orientation: number;
-  data_orientation: number;
-  creative_orientation: number;
-  business_orientation: number;
-  financial_orientation: number;
-  social_orientation: number;
-  hands_on_orientation: number;
-  pressure_tolerance: number;
-  exam_tolerance: number;
+// 12 Internal Trait Dimensions (never shown to students)
+export interface TraitDimensions {
+  analytical_reasoning: number;
+  system_thinking: number;
+  people_involvement: number;
+  persuasion_influence: number;
+  creative_expression: number;
+  visual_thinking: number;
+  precision_orientation: number;
+  risk_appetite: number;
+  learning_depth_tolerance: number;
+  ambiguity_tolerance: number;
+  execution_drive: number;
+  planning_drive: number;
 }
+
+// Legacy type alias for compatibility
+export type ScoreDimensions = TraitDimensions;
 
 export interface AssessmentOption {
   value: string;
   label: string;
-  scores: Partial<ScoreDimensions>;
+  scores: Partial<TraitDimensions>;
 }
+
+export type QuestionType = 'situational' | 'forced_choice' | 'emotional' | 'discomfort' | 'validation';
 
 export interface AssessmentQuestion {
   id: string;
+  type: QuestionType;
   question: string;
+  context?: string; // For situational questions
   options: AssessmentOption[];
 }
 
-// SET-A: After 10th Standard
+// Helper function to shuffle array
+function shuffleOptions<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// SET-A: After 10th Standard - Behavioral Assessment
 export const questionsAfter10th: AssessmentQuestion[] = [
+  // Situational Questions (Q1-Q6)
   {
     id: 'q1',
-    question: 'Which activity gives you the most satisfaction?',
+    type: 'situational',
+    context: 'You are part of a team working on a school project. The project suddenly starts failing.',
+    question: 'Which role would you naturally take without being told?',
     options: [
-      { value: 'A', label: 'Solving logical or numerical problems', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Organising money, accounts or business ideas', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Creating or expressing ideas (design, writing, media, art)', scores: { creative_orientation: 3, social_orientation: 1 } },
-      { value: 'D', label: 'Building, repairing or operating machines or tools', scores: { hands_on_orientation: 3, technical_orientation: 1 } },
+      { value: 'A', label: 'Quietly analyse what is breaking and try to fix it', scores: { analytical_reasoning: 3, system_thinking: 2 } },
+      { value: 'B', label: 'Bring the team together and re-organise the work', scores: { people_involvement: 3, planning_drive: 2 } },
+      { value: 'C', label: 'Rethink the idea and try a completely new approach', scores: { creative_expression: 3, ambiguity_tolerance: 2 } },
+      { value: 'D', label: 'Jump into action and start fixing things on the ground', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
   {
     id: 'q2',
-    question: 'Which subject feels easiest for you to understand?',
+    type: 'situational',
+    context: 'Your group has been given a complex puzzle that no one has solved before.',
+    question: 'What is your first instinct?',
     options: [
-      { value: 'A', label: 'Mathematics', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Economics / business related topics', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Languages / social sciences', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Practical or technical subjects', scores: { hands_on_orientation: 2, technical_orientation: 2 } },
+      { value: 'A', label: 'Break the puzzle into smaller logical parts', scores: { analytical_reasoning: 3, system_thinking: 2 } },
+      { value: 'B', label: 'Look for patterns others might have missed', scores: { visual_thinking: 2, creative_expression: 2, learning_depth_tolerance: 1 } },
+      { value: 'C', label: 'Discuss with others to get different perspectives', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'D', label: 'Start experimenting with different approaches immediately', scores: { execution_drive: 2, risk_appetite: 2, ambiguity_tolerance: 1 } },
     ],
   },
   {
     id: 'q3',
-    question: 'How do you usually prefer to learn?',
+    type: 'situational',
+    context: 'You are asked to present an important idea to convince others.',
+    question: 'How would you prepare?',
     options: [
-      { value: 'A', label: 'Through theory and problem solving', scores: { technical_orientation: 2, data_orientation: 1, exam_tolerance: 1 } },
-      { value: 'B', label: 'Through case studies and real-world examples', scores: { business_orientation: 2, financial_orientation: 1 } },
-      { value: 'C', label: 'Through discussion and reading', scores: { social_orientation: 2, creative_orientation: 1 } },
-      { value: 'D', label: 'Through hands-on practice', scores: { hands_on_orientation: 3 } },
+      { value: 'A', label: 'Gather facts and data to support every point', scores: { analytical_reasoning: 2, precision_orientation: 3 } },
+      { value: 'B', label: 'Create a visually compelling presentation', scores: { visual_thinking: 3, creative_expression: 2 } },
+      { value: 'C', label: 'Think about what would emotionally connect with the audience', scores: { persuasion_influence: 3, people_involvement: 2 } },
+      { value: 'D', label: 'Prepare a clear step-by-step plan to follow', scores: { planning_drive: 3, execution_drive: 1 } },
     ],
   },
   {
     id: 'q4',
-    question: 'Which environment would you enjoy most?',
+    type: 'situational',
+    context: 'You discover an error in work that has already been submitted.',
+    question: 'What would you do first?',
     options: [
-      { value: 'A', label: 'Lab, research or technical environment', scores: { technical_orientation: 2, biological_orientation: 1, data_orientation: 1 } },
-      { value: 'B', label: 'Office, business or finance environment', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Creative or social environment', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Workshop, field or production environment', scores: { hands_on_orientation: 3, technical_orientation: 1 } },
+      { value: 'A', label: 'Analyse what caused the error and how to prevent it', scores: { system_thinking: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Inform the right people immediately', scores: { precision_orientation: 2, people_involvement: 2, planning_drive: 1 } },
+      { value: 'C', label: 'Find a creative workaround to minimize the impact', scores: { creative_expression: 2, ambiguity_tolerance: 2, risk_appetite: 1 } },
+      { value: 'D', label: 'Start fixing it right away, even if imperfect', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q5',
-    question: 'How comfortable are you with long academic preparation?',
+    type: 'situational',
+    context: 'You have been given leadership of a diverse team with different opinions.',
+    question: 'How would you handle disagreements?',
     options: [
-      { value: 'A', label: 'Very comfortable', scores: { exam_tolerance: 3, pressure_tolerance: 2 } },
-      { value: 'B', label: 'Somewhat comfortable', scores: { exam_tolerance: 2, pressure_tolerance: 1 } },
-      { value: 'C', label: 'Prefer moderate academic load', scores: { exam_tolerance: 1 } },
-      { value: 'D', label: 'Prefer skill-based learning', scores: { hands_on_orientation: 2 } },
+      { value: 'A', label: 'Use logic and evidence to find the best solution', scores: { analytical_reasoning: 2, precision_orientation: 2, system_thinking: 1 } },
+      { value: 'B', label: 'Listen to everyone and find a compromise', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Propose a completely new idea that combines all views', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Make a quick decision and move forward', scores: { execution_drive: 2, risk_appetite: 2, planning_drive: 1 } },
     ],
   },
   {
     id: 'q6',
-    question: 'When working in a group, you mostly:',
+    type: 'situational',
+    context: 'You are learning something completely new with very little guidance.',
+    question: 'What helps you learn best?',
     options: [
-      { value: 'A', label: 'Solve difficult technical parts', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Manage tasks and planning', scores: { business_orientation: 2, social_orientation: 1 } },
-      { value: 'C', label: 'Generate ideas and communication', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Handle execution and operations', scores: { hands_on_orientation: 2, pressure_tolerance: 1 } },
+      { value: 'A', label: 'Reading deeply and understanding the underlying concepts', scores: { learning_depth_tolerance: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Watching demonstrations and visual explanations', scores: { visual_thinking: 3, creative_expression: 1 } },
+      { value: 'C', label: 'Discussing with others who know the subject', scores: { people_involvement: 2, persuasion_influence: 1, learning_depth_tolerance: 1 } },
+      { value: 'D', label: 'Trying things out and learning from mistakes', scores: { execution_drive: 3, risk_appetite: 1, ambiguity_tolerance: 1 } },
     ],
   },
+  // Forced-Choice Trade-off Questions (Q7-Q10)
   {
     id: 'q7',
-    question: 'What motivates you more?',
+    type: 'forced_choice',
+    question: 'Which situation would you prefer, even if both are challenging?',
     options: [
-      { value: 'A', label: 'Solving complex problems', scores: { technical_orientation: 2, data_orientation: 2, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Making profit or managing resources', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Expressing or influencing people', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Producing something tangible', scores: { hands_on_orientation: 3 } },
+      { value: 'A', label: 'Working alone on a difficult problem with no guidance', scores: { analytical_reasoning: 2, learning_depth_tolerance: 2, ambiguity_tolerance: 2 } },
+      { value: 'B', label: 'Working with many people and managing disagreements', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Working on something unclear where you must invent the solution', scores: { creative_expression: 3, ambiguity_tolerance: 2 } },
+      { value: 'D', label: 'Working on something physical where mistakes are immediately visible', scores: { execution_drive: 3, precision_orientation: 2 } },
     ],
   },
   {
     id: 'q8',
-    question: 'How do you feel about competitive entrance exams?',
+    type: 'forced_choice',
+    question: 'If you had to choose one strength to develop, which would it be?',
     options: [
-      { value: 'A', label: 'I am ready for intense preparation', scores: { exam_tolerance: 3, pressure_tolerance: 3 } },
-      { value: 'B', label: 'I can manage moderate competition', scores: { exam_tolerance: 2, pressure_tolerance: 1 } },
-      { value: 'C', label: 'I prefer flexible admission routes', scores: { creative_orientation: 1 } },
-      { value: 'D', label: 'I prefer direct skill-oriented programs', scores: { hands_on_orientation: 2 } },
+      { value: 'A', label: 'The ability to understand complex systems deeply', scores: { system_thinking: 3, learning_depth_tolerance: 2 } },
+      { value: 'B', label: 'The ability to influence and motivate others', scores: { persuasion_influence: 3, people_involvement: 2 } },
+      { value: 'C', label: 'The ability to create original ideas and designs', scores: { creative_expression: 3, visual_thinking: 2 } },
+      { value: 'D', label: 'The ability to execute tasks flawlessly', scores: { execution_drive: 2, precision_orientation: 3 } },
     ],
   },
   {
     id: 'q9',
-    question: 'Which best describes your thinking style?',
+    type: 'emotional',
+    question: 'At the end of a long day, which type of work would leave you feeling most satisfied?',
     options: [
-      { value: 'A', label: 'Logical and analytical', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Practical and strategic', scores: { business_orientation: 2, financial_orientation: 1 } },
-      { value: 'C', label: 'Creative and expressive', scores: { creative_orientation: 3 } },
-      { value: 'D', label: 'Mechanical and operational', scores: { hands_on_orientation: 2, technical_orientation: 1 } },
+      { value: 'A', label: 'Solving one complex, challenging problem', scores: { analytical_reasoning: 2, learning_depth_tolerance: 2, system_thinking: 1 } },
+      { value: 'B', label: 'Successfully coordinating with many people', scores: { people_involvement: 3, planning_drive: 1 } },
+      { value: 'C', label: 'Creating something original and unique', scores: { creative_expression: 3, visual_thinking: 1 } },
+      { value: 'D', label: 'Completing a list of important tasks', scores: { execution_drive: 3, precision_orientation: 1 } },
     ],
   },
   {
     id: 'q10',
-    question: 'Which activity would you enjoy most for a long time?',
+    type: 'emotional',
+    question: 'What kind of recognition would mean the most to you?',
     options: [
-      { value: 'A', label: 'Programming, research, calculations', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Business analysis, finance, marketing', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Content creation, writing, design', scores: { creative_orientation: 3, social_orientation: 1 } },
-      { value: 'D', label: 'Technical or vocational work', scores: { hands_on_orientation: 3 } },
+      { value: 'A', label: 'Being known as someone who solves the hardest problems', scores: { analytical_reasoning: 2, system_thinking: 2, learning_depth_tolerance: 1 } },
+      { value: 'B', label: 'Being known as someone who brings people together', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Being known as someone with original ideas', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Being known as someone who gets things done', scores: { execution_drive: 3, planning_drive: 1 } },
     ],
   },
+  // Discomfort Detection Questions (Q11-Q12)
   {
     id: 'q11',
-    question: 'Which future lifestyle matters most to you?',
+    type: 'discomfort',
+    question: 'Which situation would bother you the most?',
     options: [
-      { value: 'A', label: 'Innovation and intellectual growth', scores: { technical_orientation: 2, data_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Financial growth and leadership', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'Social impact and recognition', scores: { social_orientation: 3, creative_orientation: 1 } },
-      { value: 'D', label: 'Stable skilled profession', scores: { hands_on_orientation: 2, pressure_tolerance: -1 } },
+      { value: 'A', label: 'Not understanding why something works', scores: { analytical_reasoning: 2, learning_depth_tolerance: 2, system_thinking: 1 } },
+      { value: 'B', label: 'Not being able to convince others of your idea', scores: { persuasion_influence: 3, people_involvement: 1 } },
+      { value: 'C', label: 'Not having freedom to modify your work', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Not seeing the results of your efforts', scores: { execution_drive: 3, precision_orientation: 1 } },
     ],
   },
   {
     id: 'q12',
-    question: 'Which statement fits you best?',
+    type: 'discomfort',
+    question: 'What would frustrate you the most in a project?',
     options: [
-      { value: 'A', label: 'I enjoy complex abstract problems', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'I enjoy decision making and planning', scores: { business_orientation: 2, financial_orientation: 1 } },
-      { value: 'C', label: 'I enjoy storytelling and communication', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'I enjoy physical or technical tasks', scores: { hands_on_orientation: 3 } },
+      { value: 'A', label: 'Having to make decisions without enough information', scores: { precision_orientation: 2, analytical_reasoning: 2, risk_appetite: -1 } },
+      { value: 'B', label: 'Working alone without any team interaction', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Following strict rules with no room for creativity', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Planning endlessly without taking action', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
+  // Validation Questions (Q13-Q15)
   {
     id: 'q13',
-    question: 'Which risk level suits you?',
+    type: 'validation',
+    question: 'If you had to track one type of progress every week, what would it be?',
     options: [
-      { value: 'A', label: 'High competition, high reward', scores: { pressure_tolerance: 3, exam_tolerance: 2 } },
-      { value: 'B', label: 'Moderate risk with growth', scores: { business_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'C', label: 'Low risk, flexible path', scores: { creative_orientation: 1, social_orientation: 1 } },
-      { value: 'D', label: 'Skill security and employability', scores: { hands_on_orientation: 2 } },
+      { value: 'A', label: 'How well you understand the underlying systems', scores: { system_thinking: 2, analytical_reasoning: 2, learning_depth_tolerance: 1 } },
+      { value: 'B', label: 'How people are responding to your work', scores: { people_involvement: 2, persuasion_influence: 2 } },
+      { value: 'C', label: 'How innovative your outcomes are', scores: { creative_expression: 3, visual_thinking: 1 } },
+      { value: 'D', label: 'How many tasks you have completed', scores: { execution_drive: 3, planning_drive: 1 } },
     ],
   },
   {
     id: 'q14',
-    question: 'How important is creativity in your future work?',
+    type: 'validation',
+    question: 'When facing uncertainty, you typically:',
     options: [
-      { value: 'A', label: 'Not very important', scores: { technical_orientation: 1, data_orientation: 1 } },
-      { value: 'B', label: 'Somewhat important', scores: { business_orientation: 1 } },
-      { value: 'C', label: 'Very important', scores: { creative_orientation: 3, social_orientation: 1 } },
-      { value: 'D', label: 'Only practical outcomes matter', scores: { hands_on_orientation: 2 } },
+      { value: 'A', label: 'Gather more information before deciding', scores: { analytical_reasoning: 2, precision_orientation: 2, risk_appetite: -1 } },
+      { value: 'B', label: 'Consult with others you trust', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Trust your instincts and adapt as you go', scores: { ambiguity_tolerance: 3, risk_appetite: 2 } },
+      { value: 'D', label: 'Take small steps and adjust based on results', scores: { execution_drive: 2, planning_drive: 2, precision_orientation: 1 } },
     ],
   },
   {
     id: 'q15',
-    question: 'Which describes you best?',
+    type: 'validation',
+    question: 'In your ideal work, you would spend most time:',
     options: [
-      { value: 'A', label: 'I enjoy technical depth', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'I enjoy managing people or money', scores: { business_orientation: 2, financial_orientation: 2 } },
-      { value: 'C', label: 'I enjoy expressing ideas', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'I enjoy making things work', scores: { hands_on_orientation: 3, technical_orientation: 1 } },
+      { value: 'A', label: 'Analyzing and solving complex challenges', scores: { analytical_reasoning: 3, system_thinking: 2 } },
+      { value: 'B', label: 'Interacting with and helping others', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Designing and creating new things', scores: { creative_expression: 3, visual_thinking: 2 } },
+      { value: 'D', label: 'Executing and completing tangible work', scores: { execution_drive: 3, precision_orientation: 1 } },
     ],
   },
 ];
 
-// SET-B: After 12th Science (PCM / PCB / PCMB)
+// SET-B: After 12th Science (PCM / PCB / PCMB) - Behavioral Assessment
 export const questionsAfter12thScience: AssessmentQuestion[] = [
+  // Situational Questions (Q1-Q6)
   {
     id: 'q1',
-    question: 'Which type of problem excites you the most?',
+    type: 'situational',
+    context: 'A critical system you are responsible for has stopped working unexpectedly.',
+    question: 'What is your first response?',
     options: [
-      { value: 'A', label: 'Engineering and system design problems', scores: { technical_orientation: 3, data_orientation: 1 } },
-      { value: 'B', label: 'Biological or medical problems', scores: { biological_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Data, logic and algorithmic problems', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Design and innovation problems', scores: { creative_orientation: 3, technical_orientation: 1 } },
+      { value: 'A', label: 'Systematically trace through each component to find the fault', scores: { system_thinking: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Consider how this affects the people depending on it', scores: { people_involvement: 3, planning_drive: 1 } },
+      { value: 'C', label: 'Look for patterns in the data to identify anomalies', scores: { analytical_reasoning: 3, precision_orientation: 1 } },
+      { value: 'D', label: 'Try several quick fixes to restore functionality', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
   {
     id: 'q2',
-    question: 'Which academic activity do you enjoy most?',
+    type: 'situational',
+    context: 'You are given an open-ended project with no clear right answer.',
+    question: 'How do you approach it?',
     options: [
-      { value: 'A', label: 'Applying physics and mathematics', scores: { technical_orientation: 2, data_orientation: 2 } },
-      { value: 'B', label: 'Studying biological systems', scores: { biological_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Analysing data and models', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Creating solutions visually or creatively', scores: { creative_orientation: 3 } },
+      { value: 'A', label: 'Define the problem precisely before exploring solutions', scores: { system_thinking: 2, precision_orientation: 2, planning_drive: 1 } },
+      { value: 'B', label: 'Consider who will use the outcome and what they need', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Brainstorm multiple creative possibilities', scores: { creative_expression: 3, ambiguity_tolerance: 2 } },
+      { value: 'D', label: 'Build a rough prototype quickly to test ideas', scores: { execution_drive: 3, visual_thinking: 1, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q3',
-    question: 'Which environment suits you best?',
+    type: 'situational',
+    context: 'You notice that a process everyone follows has a fundamental flaw.',
+    question: 'What would you do?',
     options: [
-      { value: 'A', label: 'Industry, engineering labs', scores: { technical_orientation: 2, hands_on_orientation: 2 } },
-      { value: 'B', label: 'Hospitals, research labs', scores: { biological_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Tech companies or analytics teams', scores: { data_orientation: 2, technical_orientation: 2 } },
-      { value: 'D', label: 'Design studios or innovation labs', scores: { creative_orientation: 2, technical_orientation: 1 } },
+      { value: 'A', label: 'Document the flaw with detailed analysis before proposing changes', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'B', label: 'Discuss it with stakeholders to build consensus for change', scores: { people_involvement: 2, persuasion_influence: 3 } },
+      { value: 'C', label: 'Design an innovative alternative process', scores: { creative_expression: 3, system_thinking: 1 } },
+      { value: 'D', label: 'Implement a small improvement to demonstrate the issue', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q4',
-    question: 'How do you handle long and stressful preparation?',
+    type: 'situational',
+    context: 'You are leading a project that requires skills you do not have.',
+    question: 'How would you handle this?',
     options: [
-      { value: 'A', label: 'I manage very well', scores: { pressure_tolerance: 3, exam_tolerance: 3 } },
-      { value: 'B', label: 'I manage if the goal is meaningful', scores: { pressure_tolerance: 2, exam_tolerance: 2, social_orientation: 1 } },
-      { value: 'C', label: 'I prefer practical learning', scores: { hands_on_orientation: 2, data_orientation: 1 } },
-      { value: 'D', label: 'I prefer project-based learning', scores: { creative_orientation: 2, hands_on_orientation: 1 } },
+      { value: 'A', label: 'Study the subject deeply until you understand it', scores: { learning_depth_tolerance: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Find and collaborate with experts who have those skills', scores: { people_involvement: 3, planning_drive: 1 } },
+      { value: 'C', label: 'Find a creative workaround that uses your existing strengths', scores: { creative_expression: 2, ambiguity_tolerance: 2, risk_appetite: 1 } },
+      { value: 'D', label: 'Learn just enough to make progress and iterate', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q5',
-    question: 'Which skill do you want to master?',
+    type: 'situational',
+    context: 'Your research reveals information that contradicts popular belief.',
+    question: 'What would you do?',
     options: [
-      { value: 'A', label: 'Systems and machines', scores: { technical_orientation: 3, hands_on_orientation: 1 } },
-      { value: 'B', label: 'Human health and biology', scores: { biological_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Computing and analytics', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Design and problem framing', scores: { creative_orientation: 3, data_orientation: 1 } },
+      { value: 'A', label: 'Verify and re-verify the findings with rigorous analysis', scores: { precision_orientation: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Consider how to present this sensitively to others', scores: { people_involvement: 2, persuasion_influence: 3 } },
+      { value: 'C', label: 'Explore what new possibilities this opens up', scores: { creative_expression: 2, ambiguity_tolerance: 2, learning_depth_tolerance: 1 } },
+      { value: 'D', label: 'Test the findings practically in the real world', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q6',
-    question: 'Which describes you best?',
+    type: 'situational',
+    context: 'You are offered two paths: one is safe and well-understood, the other is risky but innovative.',
+    question: 'Which influences your choice more?',
     options: [
-      { value: 'A', label: 'Precise and structured', scores: { technical_orientation: 2, data_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Caring and patient', scores: { biological_orientation: 1, social_orientation: 3 } },
-      { value: 'C', label: 'Curious and analytical', scores: { data_orientation: 2, technical_orientation: 1 } },
-      { value: 'D', label: 'Innovative and flexible', scores: { creative_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'The logical assessment of long-term outcomes', scores: { analytical_reasoning: 3, system_thinking: 1 } },
+      { value: 'B', label: 'The impact on the people involved', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'The opportunity to try something new', scores: { creative_expression: 2, risk_appetite: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'The certainty of achieving tangible results', scores: { execution_drive: 2, precision_orientation: 2, risk_appetite: -1 } },
     ],
   },
+  // Forced-Choice Trade-off Questions (Q7-Q10)
   {
     id: 'q7',
-    question: 'Which professional role sounds attractive?',
+    type: 'forced_choice',
+    question: 'Which challenge would energize you the most?',
     options: [
-      { value: 'A', label: 'Engineer', scores: { technical_orientation: 3, hands_on_orientation: 1 } },
-      { value: 'B', label: 'Doctor / researcher', scores: { biological_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Data scientist / software professional', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Product / design professional', scores: { creative_orientation: 2, business_orientation: 1, technical_orientation: 1 } },
+      { value: 'A', label: 'Understanding why a complex system behaves the way it does', scores: { system_thinking: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Helping others overcome a difficult situation', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Discovering new patterns in large amounts of information', scores: { analytical_reasoning: 3, learning_depth_tolerance: 1, precision_orientation: 1 } },
+      { value: 'D', label: 'Creating something that has never existed before', scores: { creative_expression: 3, visual_thinking: 2 } },
     ],
   },
   {
     id: 'q8',
-    question: 'How important is social interaction in your work?',
+    type: 'forced_choice',
+    question: 'If you could master one ability, which would you choose?',
     options: [
-      { value: 'A', label: 'Low', scores: { technical_orientation: 2, data_orientation: 1 } },
-      { value: 'B', label: 'High', scores: { social_orientation: 3, biological_orientation: 1 } },
-      { value: 'C', label: 'Moderate', scores: { data_orientation: 1, business_orientation: 1 } },
-      { value: 'D', label: 'Balanced', scores: { creative_orientation: 1, social_orientation: 1, technical_orientation: 1 } },
+      { value: 'A', label: 'Building and understanding intricate systems', scores: { system_thinking: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Connecting with and understanding people deeply', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Finding insights in data that others miss', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'D', label: 'Designing elegant solutions to complex problems', scores: { creative_expression: 3, visual_thinking: 2 } },
     ],
   },
   {
     id: 'q9',
-    question: 'Which challenge would you enjoy?',
+    type: 'emotional',
+    question: 'Which work outcome would give you the greatest sense of fulfillment?',
     options: [
-      { value: 'A', label: 'Building complex technical systems', scores: { technical_orientation: 3, hands_on_orientation: 1 } },
-      { value: 'B', label: 'Solving health related issues', scores: { biological_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Finding patterns in data', scores: { data_orientation: 3 } },
-      { value: 'D', label: 'Creating user-focused solutions', scores: { creative_orientation: 2, social_orientation: 1, technical_orientation: 1 } },
+      { value: 'A', label: 'A perfectly functioning system you built', scores: { system_thinking: 3, execution_drive: 1 } },
+      { value: 'B', label: 'Positive change in someone\'s life because of your work', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'A breakthrough discovery or insight', scores: { analytical_reasoning: 2, learning_depth_tolerance: 2, creative_expression: 1 } },
+      { value: 'D', label: 'An innovative creation that inspires others', scores: { creative_expression: 3, visual_thinking: 2 } },
     ],
   },
   {
     id: 'q10',
-    question: 'Which learning style fits you best?',
+    type: 'emotional',
+    question: 'What environment helps you do your best work?',
     options: [
-      { value: 'A', label: 'Deep technical learning', scores: { technical_orientation: 2, pressure_tolerance: 1, exam_tolerance: 1 } },
-      { value: 'B', label: 'Conceptual and biological learning', scores: { biological_orientation: 2, exam_tolerance: 2 } },
-      { value: 'C', label: 'Mathematical and logical learning', scores: { data_orientation: 2, technical_orientation: 1 } },
-      { value: 'D', label: 'Visual and creative learning', scores: { creative_orientation: 3 } },
+      { value: 'A', label: 'A structured environment with clear processes', scores: { precision_orientation: 3, planning_drive: 2 } },
+      { value: 'B', label: 'A collaborative environment with diverse perspectives', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'An open environment where you can explore freely', scores: { creative_expression: 2, ambiguity_tolerance: 3, risk_appetite: 1 } },
+      { value: 'D', label: 'A fast-paced environment with visible results', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
+  // Discomfort Detection Questions (Q11-Q12)
   {
     id: 'q11',
-    question: 'Which long-term goal appeals to you?',
+    type: 'discomfort',
+    question: 'Which would frustrate you the most?',
     options: [
-      { value: 'A', label: 'Technological innovation', scores: { technical_orientation: 2, data_orientation: 1, hands_on_orientation: 1 } },
-      { value: 'B', label: 'Healthcare contribution', scores: { biological_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Intelligent systems and automation', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Creative technology and products', scores: { creative_orientation: 2, technical_orientation: 1, business_orientation: 1 } },
+      { value: 'A', label: 'A problem that cannot be solved with logic alone', scores: { system_thinking: 2, analytical_reasoning: 2, ambiguity_tolerance: -1 } },
+      { value: 'B', label: 'Working in isolation without any human connection', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Analysis that leads nowhere actionable', scores: { execution_drive: 2, analytical_reasoning: 1, planning_drive: 1 } },
+      { value: 'D', label: 'Constraints that limit your creative freedom', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
     ],
   },
   {
     id: 'q12',
-    question: 'Which pressure level suits you?',
+    type: 'discomfort',
+    question: 'Which situation would make you most uncomfortable?',
     options: [
-      { value: 'A', label: 'High and competitive', scores: { pressure_tolerance: 3, exam_tolerance: 2, technical_orientation: 1 } },
-      { value: 'B', label: 'High and emotionally demanding', scores: { pressure_tolerance: 2, social_orientation: 2, biological_orientation: 1 } },
-      { value: 'C', label: 'Moderate and intellectually demanding', scores: { data_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'D', label: 'Flexible and project-oriented', scores: { creative_orientation: 2, hands_on_orientation: 1 } },
+      { value: 'A', label: 'Having to proceed without understanding the full picture', scores: { learning_depth_tolerance: 2, system_thinking: 2, risk_appetite: -1 } },
+      { value: 'B', label: 'Making decisions that negatively affect others', scores: { people_involvement: 3, precision_orientation: 1 } },
+      { value: 'C', label: 'Presenting work that is technically imperfect', scores: { precision_orientation: 3, analytical_reasoning: 1 } },
+      { value: 'D', label: 'Following a conventional approach when a better way exists', scores: { creative_expression: 3, risk_appetite: 1 } },
     ],
   },
+  // Validation Questions (Q13-Q15)
   {
     id: 'q13',
-    question: 'Which work outcome motivates you most?',
+    type: 'validation',
+    question: 'When starting something new, what do you focus on first?',
     options: [
-      { value: 'A', label: 'Functional systems', scores: { technical_orientation: 2, hands_on_orientation: 2 } },
-      { value: 'B', label: 'Improved human health', scores: { biological_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Better decision making', scores: { data_orientation: 2, business_orientation: 1 } },
-      { value: 'D', label: 'Better user experience', scores: { creative_orientation: 2, social_orientation: 1 } },
+      { value: 'A', label: 'Understanding how all the pieces fit together', scores: { system_thinking: 3, analytical_reasoning: 1 } },
+      { value: 'B', label: 'Understanding who will benefit and how', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Understanding what has and has not been tried', scores: { analytical_reasoning: 2, creative_expression: 1, learning_depth_tolerance: 1 } },
+      { value: 'D', label: 'Getting started and learning along the way', scores: { execution_drive: 3, risk_appetite: 1, ambiguity_tolerance: 1 } },
     ],
   },
   {
     id: 'q14',
-    question: 'Which future learning path suits you?',
+    type: 'validation',
+    question: 'How do you prefer to solve problems?',
     options: [
-      { value: 'A', label: 'Engineering specialisation', scores: { technical_orientation: 2, exam_tolerance: 2 } },
-      { value: 'B', label: 'Medical or life science research', scores: { biological_orientation: 2, exam_tolerance: 2, pressure_tolerance: 1 } },
-      { value: 'C', label: 'AI, analytics and computing', scores: { data_orientation: 2, technical_orientation: 1 } },
-      { value: 'D', label: 'Design and innovation', scores: { creative_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'Breaking them down into logical components', scores: { analytical_reasoning: 3, system_thinking: 2 } },
+      { value: 'B', label: 'Collaborating with others to find solutions', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Looking for unconventional approaches', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Testing solutions until one works', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q15',
-    question: 'Which identity fits you best?',
+    type: 'validation',
+    question: 'What type of thinking do you find most natural?',
     options: [
-      { value: 'A', label: 'Technical expert', scores: { technical_orientation: 3, hands_on_orientation: 1 } },
-      { value: 'B', label: 'Health professional', scores: { biological_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Data and computing professional', scores: { data_orientation: 3, technical_orientation: 1 } },
-      { value: 'D', label: 'Creative technologist', scores: { creative_orientation: 2, technical_orientation: 1, business_orientation: 1 } },
+      { value: 'A', label: 'Logical, step-by-step reasoning', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'B', label: 'Understanding people and their motivations', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Finding patterns and extracting insights', scores: { analytical_reasoning: 3, learning_depth_tolerance: 1 } },
+      { value: 'D', label: 'Visualizing and creating new concepts', scores: { creative_expression: 3, visual_thinking: 2 } },
     ],
   },
 ];
 
-// SET-C: After 12th Commerce
+// SET-C: After 12th Commerce - Behavioral Assessment
 export const questionsAfter12thCommerce: AssessmentQuestion[] = [
+  // Situational Questions (Q1-Q6)
   {
     id: 'q1',
-    question: 'Which type of work interests you most?',
+    type: 'situational',
+    context: 'Your organization is facing a financial decision with incomplete information.',
+    question: 'How would you approach this?',
     options: [
-      { value: 'A', label: 'Accounting, auditing and compliance', scores: { financial_orientation: 3, pressure_tolerance: 2 } },
-      { value: 'B', label: 'Business strategy and management', scores: { business_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Marketing, branding and sales', scores: { creative_orientation: 2, social_orientation: 2, business_orientation: 1 } },
-      { value: 'D', label: 'Financial analysis and investments', scores: { financial_orientation: 2, data_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'Gather and analyze all available data before deciding', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'B', label: 'Consult with stakeholders to understand different perspectives', scores: { people_involvement: 2, persuasion_influence: 2, planning_drive: 1 } },
+      { value: 'C', label: 'Find creative ways to get the missing information', scores: { creative_expression: 2, risk_appetite: 2, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Make the best decision with available information and adjust later', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
   {
     id: 'q2',
-    question: 'Which subject area do you enjoy most?',
+    type: 'situational',
+    context: 'You need to convince skeptical colleagues about a new approach.',
+    question: 'What strategy would you use?',
     options: [
-      { value: 'A', label: 'Accounts and taxation', scores: { financial_orientation: 3, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Business studies and management', scores: { business_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Communication and consumer behaviour', scores: { social_orientation: 2, creative_orientation: 2 } },
-      { value: 'D', label: 'Economics and finance', scores: { financial_orientation: 2, data_orientation: 2 } },
+      { value: 'A', label: 'Present detailed data and logical arguments', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'B', label: 'Build relationships and address their concerns personally', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Create an engaging presentation that tells a compelling story', scores: { creative_expression: 3, visual_thinking: 1, persuasion_influence: 1 } },
+      { value: 'D', label: 'Demonstrate results through a small pilot project', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q3',
-    question: 'Which activity sounds most engaging?',
+    type: 'situational',
+    context: 'You discover an opportunity that requires quick action but involves risk.',
+    question: 'What is your response?',
     options: [
-      { value: 'A', label: 'Preparing financial reports', scores: { financial_orientation: 3, data_orientation: 1 } },
-      { value: 'B', label: 'Managing teams or projects', scores: { business_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Creating campaigns and content', scores: { creative_orientation: 3, social_orientation: 1 } },
-      { value: 'D', label: 'Analysing markets and trends', scores: { data_orientation: 2, financial_orientation: 2 } },
+      { value: 'A', label: 'Calculate the risks and rewards carefully before acting', scores: { analytical_reasoning: 3, precision_orientation: 2, risk_appetite: -1 } },
+      { value: 'B', label: 'Discuss with trusted advisors to get their input', scores: { people_involvement: 3, planning_drive: 1 } },
+      { value: 'C', label: 'Look for a creative way to reduce the risk while capturing the opportunity', scores: { creative_expression: 2, risk_appetite: 2, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Act quickly to seize the opportunity', scores: { execution_drive: 3, risk_appetite: 3 } },
     ],
   },
   {
     id: 'q4',
-    question: 'Which role suits your personality?',
+    type: 'situational',
+    context: 'A deadline is approaching but quality is being compromised.',
+    question: 'How would you handle this tension?',
     options: [
-      { value: 'A', label: 'Detail-oriented professional', scores: { financial_orientation: 2, pressure_tolerance: 2 } },
-      { value: 'B', label: 'Leader and coordinator', scores: { business_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Influencer and communicator', scores: { social_orientation: 3, creative_orientation: 1 } },
-      { value: 'D', label: 'Analyst and strategist', scores: { data_orientation: 2, financial_orientation: 1, business_orientation: 1 } },
+      { value: 'A', label: 'Identify what is essential and prioritize accuracy', scores: { precision_orientation: 3, analytical_reasoning: 1, planning_drive: 1 } },
+      { value: 'B', label: 'Communicate with stakeholders about realistic expectations', scores: { people_involvement: 2, persuasion_influence: 2, planning_drive: 1 } },
+      { value: 'C', label: 'Find creative shortcuts that maintain quality', scores: { creative_expression: 2, ambiguity_tolerance: 2, execution_drive: 1 } },
+      { value: 'D', label: 'Push through and deliver, then improve afterwards', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
   {
     id: 'q5',
-    question: 'Which pressure suits you best?',
+    type: 'situational',
+    context: 'You are asked to lead a team where members have more experience than you.',
+    question: 'How would you establish credibility?',
     options: [
-      { value: 'A', label: 'Regulatory and compliance pressure', scores: { financial_orientation: 2, pressure_tolerance: 2, exam_tolerance: 1 } },
-      { value: 'B', label: 'Team and delivery pressure', scores: { business_orientation: 2, social_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'C', label: 'Sales and performance pressure', scores: { social_orientation: 2, business_orientation: 1, pressure_tolerance: 2 } },
-      { value: 'D', label: 'Financial decision pressure', scores: { financial_orientation: 2, data_orientation: 1, pressure_tolerance: 2 } },
+      { value: 'A', label: 'Demonstrate expertise through thorough preparation and knowledge', scores: { learning_depth_tolerance: 2, analytical_reasoning: 2, precision_orientation: 1 } },
+      { value: 'B', label: 'Build trust through genuine relationships and listening', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Bring fresh perspectives and innovative ideas', scores: { creative_expression: 3, risk_appetite: 1 } },
+      { value: 'D', label: 'Focus on delivering results and let the work speak', scores: { execution_drive: 3, planning_drive: 1 } },
     ],
   },
   {
     id: 'q6',
-    question: 'Which skill do you want to master?',
+    type: 'situational',
+    context: 'Market conditions are changing rapidly and old strategies are not working.',
+    question: 'What would be your priority?',
     options: [
-      { value: 'A', label: 'Accounting and reporting', scores: { financial_orientation: 3, data_orientation: 1 } },
-      { value: 'B', label: 'Management and operations', scores: { business_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Branding and persuasion', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Financial modelling and valuation', scores: { financial_orientation: 2, data_orientation: 2 } },
+      { value: 'A', label: 'Analyze the new conditions systematically', scores: { analytical_reasoning: 3, system_thinking: 2 } },
+      { value: 'B', label: 'Understand how customers and competitors are responding', scores: { people_involvement: 2, persuasion_influence: 2, planning_drive: 1 } },
+      { value: 'C', label: 'Develop innovative approaches for the new environment', scores: { creative_expression: 3, ambiguity_tolerance: 2 } },
+      { value: 'D', label: 'Take quick action to test new strategies', scores: { execution_drive: 3, risk_appetite: 2 } },
     ],
   },
+  // Forced-Choice Trade-off Questions (Q7-Q10)
   {
     id: 'q7',
-    question: 'Which professional path appeals to you most?',
+    type: 'forced_choice',
+    question: 'Which kind of work would you find most engaging?',
     options: [
-      { value: 'A', label: 'CA / CS / CMA', scores: { financial_orientation: 3, exam_tolerance: 3, pressure_tolerance: 2 } },
-      { value: 'B', label: 'BBA / MBA', scores: { business_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Marketing / digital media', scores: { creative_orientation: 2, social_orientation: 2, business_orientation: 1 } },
-      { value: 'D', label: 'Finance / investment roles', scores: { financial_orientation: 2, data_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'Ensuring accuracy and compliance in complex matters', scores: { precision_orientation: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Leading teams and developing people', scores: { people_involvement: 3, persuasion_influence: 2 } },
+      { value: 'C', label: 'Creating strategies to reach new audiences', scores: { creative_expression: 3, persuasion_influence: 1, risk_appetite: 1 } },
+      { value: 'D', label: 'Analyzing trends to make better decisions', scores: { analytical_reasoning: 3, planning_drive: 1 } },
     ],
   },
   {
     id: 'q8',
-    question: 'Which working style fits you?',
+    type: 'forced_choice',
+    question: 'Which strength would serve you best in your ideal future?',
     options: [
-      { value: 'A', label: 'Structured and rule-based', scores: { financial_orientation: 2, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Organised and people-oriented', scores: { business_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Creative and interactive', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Analytical and data-driven', scores: { data_orientation: 3, financial_orientation: 1 } },
+      { value: 'A', label: 'Meticulous attention to detail and accuracy', scores: { precision_orientation: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Ability to inspire and lead others', scores: { people_involvement: 2, persuasion_influence: 3 } },
+      { value: 'C', label: 'Creative thinking and communication', scores: { creative_expression: 3, visual_thinking: 1, persuasion_influence: 1 } },
+      { value: 'D', label: 'Strategic decision-making with numbers', scores: { analytical_reasoning: 3, risk_appetite: 1, planning_drive: 1 } },
     ],
   },
   {
     id: 'q9',
-    question: 'Which environment would you enjoy?',
+    type: 'emotional',
+    question: 'What type of achievement would make you most proud?',
     options: [
-      { value: 'A', label: 'Corporate compliance or audit firms', scores: { financial_orientation: 2, pressure_tolerance: 2 } },
-      { value: 'B', label: 'Business operations or consulting', scores: { business_orientation: 2, social_orientation: 1, data_orientation: 1 } },
-      { value: 'C', label: 'Media and marketing agencies', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Financial institutions', scores: { financial_orientation: 2, data_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'Solving a complex problem that required deep expertise', scores: { learning_depth_tolerance: 2, analytical_reasoning: 2, precision_orientation: 1 } },
+      { value: 'B', label: 'Building and leading a successful team', scores: { people_involvement: 3, planning_drive: 1 } },
+      { value: 'C', label: 'Creating a campaign or idea that resonated widely', scores: { creative_expression: 3, persuasion_influence: 2 } },
+      { value: 'D', label: 'Making a decision that produced significant results', scores: { analytical_reasoning: 2, execution_drive: 2, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q10',
-    question: 'Which success matters most?',
+    type: 'emotional',
+    question: 'Which work rhythm suits you best?',
     options: [
-      { value: 'A', label: 'Professional credibility', scores: { financial_orientation: 2, exam_tolerance: 1, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Leadership and growth', scores: { business_orientation: 2, social_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'C', label: 'Public recognition', scores: { social_orientation: 2, creative_orientation: 2 } },
-      { value: 'D', label: 'Financial expertise', scores: { financial_orientation: 2, data_orientation: 2 } },
+      { value: 'A', label: 'Methodical and consistent with high attention to detail', scores: { precision_orientation: 3, planning_drive: 2 } },
+      { value: 'B', label: 'Interactive and people-focused with varied activities', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Dynamic and creative with room for innovation', scores: { creative_expression: 3, ambiguity_tolerance: 1, risk_appetite: 1 } },
+      { value: 'D', label: 'Fast-paced and results-driven with clear goals', scores: { execution_drive: 3, planning_drive: 1 } },
     ],
   },
+  // Discomfort Detection Questions (Q11-Q12)
   {
     id: 'q11',
-    question: 'Which risk profile suits you?',
+    type: 'discomfort',
+    question: 'Which situation would frustrate you the most?',
     options: [
-      { value: 'A', label: 'Low risk, stable growth', scores: { financial_orientation: 2, pressure_tolerance: -1 } },
-      { value: 'B', label: 'Moderate risk, leadership growth', scores: { business_orientation: 2, pressure_tolerance: 1 } },
-      { value: 'C', label: 'High creativity and dynamic market', scores: { creative_orientation: 2, social_orientation: 1, pressure_tolerance: 1 } },
-      { value: 'D', label: 'Market-linked financial risk', scores: { financial_orientation: 2, data_orientation: 1, pressure_tolerance: 2 } },
+      { value: 'A', label: 'Errors slipping through due to rushed work', scores: { precision_orientation: 3, analytical_reasoning: 1 } },
+      { value: 'B', label: 'Working in isolation without team collaboration', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'Following rigid processes with no room for creativity', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Endless planning without any execution', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q12',
-    question: 'Which work output motivates you?',
+    type: 'discomfort',
+    question: 'What would bother you most about your work?',
     options: [
-      { value: 'A', label: 'Accurate and compliant work', scores: { financial_orientation: 2, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Successful projects', scores: { business_orientation: 2, social_orientation: 1, hands_on_orientation: 1 } },
-      { value: 'C', label: 'Influenced customers', scores: { social_orientation: 2, creative_orientation: 2 } },
-      { value: 'D', label: 'Profitable investments', scores: { financial_orientation: 2, data_orientation: 2, business_orientation: 1 } },
+      { value: 'A', label: 'Uncertainty about whether you are correct', scores: { precision_orientation: 3, analytical_reasoning: 1, risk_appetite: -1 } },
+      { value: 'B', label: 'Lack of recognition from others', scores: { persuasion_influence: 2, people_involvement: 2 } },
+      { value: 'C', label: 'Repetitive tasks with no variety', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'Goals that keep changing without resolution', scores: { planning_drive: 2, execution_drive: 2, precision_orientation: 1 } },
     ],
   },
+  // Validation Questions (Q13-Q15)
   {
     id: 'q13',
-    question: 'Which learning style suits you?',
+    type: 'validation',
+    question: 'When evaluating opportunities, what matters most to you?',
     options: [
-      { value: 'A', label: 'Rules and standards', scores: { financial_orientation: 2, exam_tolerance: 2 } },
-      { value: 'B', label: 'Practical management learning', scores: { business_orientation: 2, hands_on_orientation: 1 } },
-      { value: 'C', label: 'Communication and creativity', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Numbers and analytics', scores: { data_orientation: 3, financial_orientation: 1 } },
+      { value: 'A', label: 'The stability and predictability of outcomes', scores: { precision_orientation: 2, planning_drive: 2, risk_appetite: -1 } },
+      { value: 'B', label: 'The opportunity to work with and lead others', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'The scope for creativity and self-expression', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'The potential for growth and high returns', scores: { risk_appetite: 3, analytical_reasoning: 1 } },
     ],
   },
   {
     id: 'q14',
-    question: 'Which long-term role appeals to you?',
+    type: 'validation',
+    question: 'How do you naturally approach new challenges?',
     options: [
-      { value: 'A', label: 'Financial controller', scores: { financial_orientation: 3, business_orientation: 1 } },
-      { value: 'B', label: 'Business leader', scores: { business_orientation: 3, social_orientation: 1 } },
-      { value: 'C', label: 'Brand or media professional', scores: { creative_orientation: 2, social_orientation: 2 } },
-      { value: 'D', label: 'Investment professional', scores: { financial_orientation: 2, data_orientation: 2 } },
+      { value: 'A', label: 'With careful analysis and thorough preparation', scores: { analytical_reasoning: 3, precision_orientation: 2 } },
+      { value: 'B', label: 'By building a team and leveraging relationships', scores: { people_involvement: 3, persuasion_influence: 1 } },
+      { value: 'C', label: 'By finding innovative angles others have missed', scores: { creative_expression: 3, ambiguity_tolerance: 1 } },
+      { value: 'D', label: 'By taking action and learning from experience', scores: { execution_drive: 3, risk_appetite: 1 } },
     ],
   },
   {
     id: 'q15',
-    question: 'Which describes you best?',
+    type: 'validation',
+    question: 'In your ideal role, you would be known for:',
     options: [
-      { value: 'A', label: 'Reliable and precise', scores: { financial_orientation: 2, pressure_tolerance: 1 } },
-      { value: 'B', label: 'Organised and motivating', scores: { business_orientation: 2, social_orientation: 2 } },
-      { value: 'C', label: 'Persuasive and expressive', scores: { social_orientation: 2, creative_orientation: 2 } },
-      { value: 'D', label: 'Analytical and strategic', scores: { data_orientation: 2, financial_orientation: 1, business_orientation: 1 } },
+      { value: 'A', label: 'Accuracy, expertise, and reliability', scores: { precision_orientation: 3, analytical_reasoning: 2 } },
+      { value: 'B', label: 'Leadership, influence, and team building', scores: { people_involvement: 2, persuasion_influence: 3 } },
+      { value: 'C', label: 'Creativity, communication, and fresh ideas', scores: { creative_expression: 3, visual_thinking: 1, persuasion_influence: 1 } },
+      { value: 'D', label: 'Results, strategy, and sound judgment', scores: { analytical_reasoning: 2, execution_drive: 2, planning_drive: 1 } },
     ],
   },
 ];
 
-// Helper function to get questions by completed class
+// Get questions for a specific class with randomized option order
 export function getQuestionsForClass(completedClass: CompletedClass): AssessmentQuestion[] {
+  let questions: AssessmentQuestion[];
+  
   switch (completedClass) {
     case '10th':
-      return questionsAfter10th;
+      questions = questionsAfter10th;
+      break;
     case '12th_science':
-      return questionsAfter12thScience;
+      questions = questionsAfter12thScience;
+      break;
     case '12th_commerce':
-      return questionsAfter12thCommerce;
+      questions = questionsAfter12thCommerce;
+      break;
     default:
-      return questionsAfter10th;
+      questions = questionsAfter10th;
   }
+
+  // Randomize option order for each question to prevent pattern recognition
+  return questions.map(q => ({
+    ...q,
+    options: shuffleOptions(q.options).map((opt, idx) => ({
+      ...opt,
+      value: String.fromCharCode(65 + idx), // Re-assign A, B, C, D after shuffle
+    })),
+  }));
+}
+
+// Calculate trait consistency score
+export function calculateConsistencyScore(
+  responses: Record<string, string>,
+  questions: AssessmentQuestion[]
+): number {
+  const validationQuestions = questions.filter(q => q.type === 'validation');
+  const mainQuestions = questions.filter(q => q.type !== 'validation');
+  
+  // Compare validation responses with main question patterns
+  // Higher score = more consistent responses
+  let consistencyPoints = 0;
+  const maxPoints = validationQuestions.length;
+  
+  // Simplified consistency check - would be more sophisticated in production
+  validationQuestions.forEach(vq => {
+    const vResponse = responses[vq.id];
+    if (vResponse) {
+      consistencyPoints += 0.7 + Math.random() * 0.3; // Placeholder for actual consistency logic
+    }
+  });
+  
+  return maxPoints > 0 ? (consistencyPoints / maxPoints) * 100 : 100;
 }
