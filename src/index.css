@@ -2,147 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-/* PrepMate by Team Shadow - Career Discovery & Study Planning Platform
-   Shape Your Future, Plan Your Success.
-   A modern EdTech platform with vibrant purples, teal accents, and warm amber tones.
+/* PrepMate - Shape Your Career Path
+   Professional career discovery platform with teal/cyan accents and warm cream tones.
 */
 
 @layer base {
   :root {
-    /* Core backgrounds - Clean, professional */
-    --background: 240 10% 98%;
-    --foreground: 240 10% 8%;
+    /* Core backgrounds - Light professional */
+    --background: 210 20% 98%;
+    --foreground: 210 25% 10%;
 
     /* Cards & Surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 210 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
+    --popover-foreground: 210 25% 10%;
 
-    /* Primary - Vibrant Purple */
-    --primary: 262 83% 58%;
+    /* Primary - Teal/Cyan (from logo) */
+    --primary: 175 55% 42%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Soft Lavender */
-    --secondary: 270 30% 96%;
-    --secondary-foreground: 240 10% 8%;
+    /* Secondary - Warm Cream (from logo) */
+    --secondary: 25 30% 92%;
+    --secondary-foreground: 210 25% 15%;
 
-    /* Muted - Subtle backgrounds */
-    --muted: 260 20% 95%;
-    --muted-foreground: 240 5% 46%;
+    /* Muted - Soft backgrounds */
+    --muted: 200 15% 95%;
+    --muted-foreground: 210 10% 45%;
 
-    /* Accent - Electric Cyan */
-    --accent: 180 100% 45%;
+    /* Accent - Deep Teal */
+    --accent: 175 65% 35%;
     --accent-foreground: 0 0% 100%;
 
     /* Destructive - Rose Red */
-    --destructive: 350 89% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Success - Emerald Green */
+    /* Success - Emerald */
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
 
-    /* Warning - Sunset Orange */
-    --warning: 32 95% 54%;
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    /* Info - Ocean Blue */
-    --info: 210 100% 56%;
+    /* Info - Sky Blue */
+    --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
-    /* Skill Level Colors */
-    --skill-beginner: 32 95% 54%;
-    --skill-intermediate: 210 100% 56%;
-    --skill-advanced: 160 84% 39%;
-
-    /* Gap Severity Colors */
-    --gap-critical: 350 89% 60%;
-    --gap-moderate: 32 95% 54%;
-    --gap-minor: 210 100% 56%;
+    /* Trait Level Colors */
+    --trait-low: 38 92% 50%;
+    --trait-medium: 199 89% 48%;
+    --trait-high: 160 84% 39%;
 
     /* Borders & Inputs */
-    --border: 260 20% 90%;
-    --input: 260 20% 90%;
-    --ring: 262 83% 58%;
+    --border: 200 15% 88%;
+    --input: 200 15% 88%;
+    --ring: 175 55% 42%;
 
-    --radius: 0.875rem;
+    --radius: 0.75rem;
 
-    /* Sidebar - Deep Purple */
-    --sidebar-background: 262 60% 12%;
-    --sidebar-foreground: 260 20% 98%;
-    --sidebar-primary: 262 83% 65%;
+    /* Sidebar - Dark Charcoal (from logo) */
+    --sidebar-background: 210 20% 12%;
+    --sidebar-foreground: 25 25% 92%;
+    --sidebar-primary: 175 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 262 40% 20%;
-    --sidebar-accent-foreground: 260 20% 98%;
-    --sidebar-border: 262 30% 22%;
-    --sidebar-ring: 262 83% 58%;
+    --sidebar-accent: 210 20% 18%;
+    --sidebar-accent-foreground: 25 25% 92%;
+    --sidebar-border: 210 15% 22%;
+    --sidebar-ring: 175 55% 42%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(290 80% 55%));
-    --gradient-success: linear-gradient(135deg, hsl(160 84% 39%), hsl(170 84% 45%));
-    --gradient-accent: linear-gradient(135deg, hsl(180 100% 45%), hsl(200 100% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(290 80% 55%) 35%, hsl(180 100% 45%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(260 20% 98%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(350 89% 60%), hsl(32 95% 54%));
+    --gradient-primary: linear-gradient(135deg, hsl(175 55% 42%), hsl(185 60% 48%));
+    --gradient-success: linear-gradient(135deg, hsl(160 84% 39%), hsl(170 80% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(175 65% 35%), hsl(190 70% 40%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 20% 12%) 0%, hsl(210 25% 18%) 50%, hsl(175 55% 30%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(200 15% 98%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(25 30% 92%), hsl(30 35% 88%));
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(262 83% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(262 83% 20% / 0.08), 0 2px 4px -2px hsl(262 83% 20% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(262 83% 20% / 0.1), 0 4px 6px -4px hsl(262 83% 20% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(262 83% 20% / 0.1), 0 8px 10px -6px hsl(262 83% 20% / 0.05);
-    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.2);
+    --shadow-sm: 0 1px 2px 0 hsl(210 20% 20% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(210 20% 20% / 0.08), 0 2px 4px -2px hsl(210 20% 20% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(210 20% 20% / 0.1), 0 4px 6px -4px hsl(210 20% 20% / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(210 20% 20% / 0.1), 0 8px 10px -6px hsl(210 20% 20% / 0.05);
+    --shadow-glow: 0 0 40px hsl(175 55% 42% / 0.2);
     --shadow-success: 0 0 20px hsl(160 84% 39% / 0.25);
-    --shadow-accent: 0 0 30px hsl(180 100% 45% / 0.2);
+    --shadow-accent: 0 0 30px hsl(175 65% 35% / 0.2);
   }
 
   .dark {
-    --background: 260 30% 6%;
-    --foreground: 260 10% 98%;
+    --background: 210 20% 8%;
+    --foreground: 25 20% 95%;
 
-    --card: 260 30% 10%;
-    --card-foreground: 260 10% 98%;
+    --card: 210 20% 12%;
+    --card-foreground: 25 20% 95%;
 
-    --popover: 260 30% 10%;
-    --popover-foreground: 260 10% 98%;
+    --popover: 210 20% 12%;
+    --popover-foreground: 25 20% 95%;
 
-    --primary: 262 83% 65%;
+    --primary: 175 55% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 30% 16%;
-    --secondary-foreground: 260 10% 98%;
+    --secondary: 210 20% 18%;
+    --secondary-foreground: 25 20% 92%;
 
-    --muted: 260 30% 16%;
-    --muted-foreground: 260 15% 65%;
+    --muted: 210 20% 16%;
+    --muted-foreground: 200 10% 60%;
 
-    --accent: 180 100% 50%;
+    --accent: 175 60% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 350 89% 55%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
     --success: 160 84% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 32 95% 55%;
+    --warning: 38 92% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --info: 210 100% 60%;
+    --info: 199 89% 55%;
     --info-foreground: 0 0% 100%;
 
-    --border: 260 30% 20%;
-    --input: 260 30% 20%;
-    --ring: 262 83% 65%;
+    --border: 210 20% 22%;
+    --input: 210 20% 22%;
+    --ring: 175 55% 50%;
 
-    --sidebar-background: 260 40% 5%;
-    --sidebar-foreground: 260 10% 98%;
-    --sidebar-primary: 262 83% 65%;
+    --sidebar-background: 210 25% 6%;
+    --sidebar-foreground: 25 20% 95%;
+    --sidebar-primary: 175 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 30% 14%;
-    --sidebar-accent-foreground: 260 10% 98%;
-    --sidebar-border: 260 30% 16%;
-    --sidebar-ring: 262 83% 65%;
+    --sidebar-accent: 210 20% 14%;
+    --sidebar-accent-foreground: 25 20% 95%;
+    --sidebar-border: 210 20% 18%;
+    --sidebar-ring: 175 55% 50%;
   }
 }
 
@@ -172,42 +166,25 @@
 }
 
 @layer components {
-  /* Skill Progress Meter */
-  .skill-meter {
+  /* Trait Progress Meter */
+  .trait-meter {
     @apply relative h-2 w-full overflow-hidden rounded-full bg-muted;
   }
 
-  .skill-meter-fill {
+  .trait-meter-fill {
     @apply h-full rounded-full transition-all duration-700 ease-out;
   }
 
-  .skill-meter-beginner {
+  .trait-meter-low {
     @apply bg-warning;
   }
 
-  .skill-meter-intermediate {
+  .trait-meter-medium {
     @apply bg-info;
   }
 
-  .skill-meter-advanced {
+  .trait-meter-high {
     @apply bg-success;
-  }
-
-  /* Gap Indicator */
-  .gap-indicator {
-    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
-  }
-
-  .gap-critical {
-    @apply bg-destructive/10 text-destructive;
-  }
-
-  .gap-moderate {
-    @apply bg-warning/10 text-warning;
-  }
-
-  .gap-minor {
-    @apply bg-info/10 text-info;
   }
 
   /* Card Variants */
@@ -225,9 +202,41 @@
     background: var(--gradient-hero);
   }
 
+  /* Assessment Card */
+  .assessment-card {
+    @apply relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300;
+  }
+
+  .assessment-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: var(--gradient-primary);
+  }
+
+  .assessment-card:hover::before {
+    @apply opacity-5;
+  }
+
+  .assessment-card:hover {
+    @apply shadow-lg border-primary/30;
+  }
+
+  /* Assessment Option */
+  .assessment-option {
+    @apply relative flex items-start gap-4 p-5 rounded-xl border-2 border-border/60 bg-card/50 transition-all duration-200 cursor-pointer;
+  }
+
+  .assessment-option:hover {
+    @apply border-primary/40 bg-primary/5;
+  }
+
+  .assessment-option.selected {
+    @apply border-primary bg-primary/10;
+  }
+
   /* Animated Background */
   .animated-gradient {
-    background: linear-gradient(-45deg, hsl(226 70% 55%), hsl(246 70% 60%), hsl(280 60% 55%), hsl(226 70% 55%));
+    background: linear-gradient(-45deg, hsl(175 55% 42%), hsl(185 60% 48%), hsl(210 20% 12%), hsl(175 65% 35%));
     background-size: 400% 400%;
     animation: gradient-shift 15s ease infinite;
   }
@@ -244,8 +253,8 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(226 70% 55% / 0.4); }
-    50% { box-shadow: 0 0 20px 10px hsl(226 70% 55% / 0); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(175 55% 42% / 0.4); }
+    50% { box-shadow: 0 0 20px 10px hsl(175 55% 42% / 0); }
   }
 
   /* Progress animation */
@@ -267,23 +276,20 @@
     50% { transform: translateY(-20px); }
   }
 
-  /* Skill card hover */
-  .skill-card {
-    @apply relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300;
+  /* Fade in up animation */
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
   }
 
-  .skill-card::before {
-    content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
-    background: var(--gradient-primary);
-  }
-
-  .skill-card:hover::before {
-    @apply opacity-5;
-  }
-
-  .skill-card:hover {
-    @apply shadow-lg border-primary/30;
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 

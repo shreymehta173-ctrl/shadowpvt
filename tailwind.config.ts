@@ -59,15 +59,10 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
-        skill: {
-          beginner: "hsl(var(--skill-beginner))",
-          intermediate: "hsl(var(--skill-intermediate))",
-          advanced: "hsl(var(--skill-advanced))",
-        },
-        gap: {
-          critical: "hsl(var(--gap-critical))",
-          moderate: "hsl(var(--gap-moderate))",
-          minor: "hsl(var(--gap-minor))",
+        trait: {
+          low: "hsl(var(--trait-low))",
+          medium: "hsl(var(--trait-medium))",
+          high: "hsl(var(--trait-high))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -139,7 +134,7 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "hero-pattern": "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234f6bf5' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+        "hero-pattern": "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2347b5a8' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
       },
     },
   },
