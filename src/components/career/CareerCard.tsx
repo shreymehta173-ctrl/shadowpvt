@@ -8,6 +8,7 @@ import {
   Sparkles,
   Zap,
   Target,
+  GraduationCap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -45,10 +46,10 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
   };
 
   const getGlowColor = (score: number) => {
-    if (score >= 80) return 'hover:shadow-success/20';
-    if (score >= 60) return 'hover:shadow-info/20';
-    if (score >= 40) return 'hover:shadow-warning/20';
-    return 'hover:shadow-muted/20';
+    if (score >= 80) return 'hover:shadow-[0_0_30px_hsl(var(--success)/0.3)]';
+    if (score >= 60) return 'hover:shadow-[0_0_30px_hsl(var(--info)/0.3)]';
+    if (score >= 40) return 'hover:shadow-[0_0_30px_hsl(var(--warning)/0.3)]';
+    return 'hover:shadow-xl';
   };
 
   const getGrowthBadgeStyle = (rate: string) => {
@@ -70,10 +71,10 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
     <Card 
       className={cn(
         "group cursor-pointer transition-all duration-500 overflow-hidden relative",
-        "border border-border/40 bg-gradient-to-br from-card via-card to-muted/20",
-        "hover:shadow-2xl hover:-translate-y-2 hover:border-primary/40",
+        "border-2 border-border/40 bg-gradient-to-br from-card via-card to-muted/20",
+        "hover:-translate-y-2 hover:border-primary/50",
         getGlowColor(matchPercentage),
-        "animate-fade-in"
+        "fade-in-up"
       )}
       style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
       onClick={onClick}
@@ -81,11 +82,16 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
       {/* Animated background gradient on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-success/0 group-hover:from-primary/5 group-hover:via-accent/5 group-hover:to-success/5 transition-all duration-500" />
       
+      {/* Shimmer effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      </div>
+      
       {/* Top Match Badge */}
       {isTopMatch && (
         <div className="absolute -top-1 -right-1 z-10">
-          <div className="bg-gradient-to-r from-success via-success to-success/90 text-success-foreground text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl flex items-center gap-1.5 shadow-lg shadow-success/30 animate-pulse">
-            <Sparkles className="h-3 w-3" />
+          <div className="bg-gradient-to-r from-success via-success to-success/90 text-success-foreground text-[10px] font-bold px-3 py-1.5 rounded-bl-xl rounded-tr-xl flex items-center gap-1.5 shadow-lg shadow-success/30">
+            <Sparkles className="h-3 w-3 animate-pulse" />
             Top Match
           </div>
         </div>
@@ -96,15 +102,15 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
         <div className="flex items-start justify-between mb-4">
           <div 
             className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl",
+              "w-16 h-16 rounded-2xl flex items-center justify-center text-3xl",
               "transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
-              "shadow-md group-hover:shadow-xl",
+              "shadow-lg group-hover:shadow-xl",
               isTopMatch 
                 ? "bg-gradient-to-br from-success/20 to-success/10 ring-2 ring-success/30" 
                 : "bg-gradient-to-br from-primary/15 to-accent/10"
             )}
           >
-            {career.icon || <Briefcase className={cn("h-7 w-7", isTopMatch ? "text-success" : "text-primary")} />}
+            {career.icon || <Briefcase className={cn("h-8 w-8", isTopMatch ? "text-success" : "text-primary")} />}
           </div>
           <Badge className={cn("text-xs font-semibold shadow-sm", getGrowthBadgeStyle(career.growth_rate))}>
             <TrendingUp className="h-3 w-3 mr-1" />
@@ -113,11 +119,11 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
         </div>
 
         {/* Title & Industry */}
-        <h3 className="font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300 line-clamp-1 text-base">
+        <h3 className="font-bold text-foreground mb-1.5 group-hover:text-primary transition-colors duration-300 line-clamp-1 text-lg">
           {career.career_name}
         </h3>
-        <div className="flex items-center gap-1.5 mb-4">
-          <Zap className="h-3 w-3 text-accent" />
+        <div className="flex items-center gap-2 mb-4">
+          <GraduationCap className="h-3.5 w-3.5 text-muted-foreground" />
           <p className="text-sm text-muted-foreground line-clamp-1">{career.industry}</p>
         </div>
 
@@ -125,17 +131,19 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
         <div className="space-y-3">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Target className="h-3.5 w-3.5 text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-muted/50">
+                  <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
                 <span className="text-xs text-muted-foreground font-medium">Match Score</span>
               </div>
-              <span className={cn("text-lg font-bold tabular-nums", getScoreColor(matchPercentage))}>
+              <span className={cn("text-xl font-bold tabular-nums", getScoreColor(matchPercentage))}>
                 {matchPercentage}%
               </span>
             </div>
             
             {/* Custom Progress Bar */}
-            <div className="h-2.5 bg-muted/60 rounded-full overflow-hidden relative">
+            <div className="h-3 bg-muted/60 rounded-full overflow-hidden relative">
               <div 
                 className={cn(
                   "h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden",
@@ -144,22 +152,22 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
                 style={{ width: `${matchPercentage}%` }}
               >
                 {/* Animated shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </div>
             </div>
           </div>
 
           {/* Footer Stats */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/30">
+          <div className="flex items-center justify-between pt-3 border-t border-border/30">
             <div className="flex items-center gap-1.5">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star 
                     key={i} 
                     className={cn(
-                      "h-3.5 w-3.5 transition-all duration-300",
+                      "h-4 w-4 transition-all duration-300",
                       i < Math.round(career.future_scope_score / 2) 
-                        ? "text-warning fill-warning" 
+                        ? "text-accent fill-accent" 
                         : "text-muted-foreground/30"
                     )} 
                   />
@@ -167,9 +175,9 @@ export function CareerCard({ career, onClick, index = 0 }: CareerCardProps) {
               </div>
               <span className="text-xs text-muted-foreground ml-1">Future Scope</span>
             </div>
-            <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-all duration-300">
-              <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">View</span>
-              <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+            <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-primary transition-all duration-300">
+              <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">Explore</span>
+              <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
             </div>
           </div>
         </div>
