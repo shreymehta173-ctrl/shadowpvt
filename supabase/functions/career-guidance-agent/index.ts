@@ -429,138 +429,216 @@ async function handleChat(
     .eq("id", studentId)
     .single();
 
-  // Build pathway-specific context
+  // Build comprehensive pathway-specific context
   let pathwayContext = "";
   let careerContext = "";
   let strengthsContext = "";
+  let examGuidance = "";
   
   if (assessmentContext) {
-    // Determine pathway label
-    const pathwayLabel = assessmentContext.completed_class === 'after_10th' 
-      ? 'After 10th Standard' 
-      : assessmentContext.completed_class === 'after_12th_science'
-        ? `After 12th Science (${assessmentContext.stream || 'General'})`
-        : 'After 12th Commerce';
-    
-    pathwayContext = `Assessment Type: ${pathwayLabel}`;
+    // Determine pathway label and relevant guidance
+    if (assessmentContext.completed_class === 'after_10th') {
+      pathwayContext = 'After 10th Standard';
+      examGuidance = `
+**Relevant Competitive Exams:**
+- NTSE (National Talent Search Examination) - November/May
+- Science/Math Olympiads - December-February
+- KVPY/INSPIRE - For science aptitude
+- Polytechnic Entrance - For diploma courses
+
+**Stream Options to Discuss:**
+- Science (PCM/PCB) → Engineering/Medical/Research
+- Commerce → CA/CS/MBA/Finance
+- Arts/Humanities → Law/Civil Services/Journalism
+- Diploma/ITI → Technical skills/Early employment`;
+    } else if (assessmentContext.completed_class === 'after_12th_science') {
+      pathwayContext = `After 12th Science (${assessmentContext.stream || 'General'})`;
+      examGuidance = assessmentContext.stream === 'PCM' || assessmentContext.stream === 'PCMB'
+        ? `
+**Engineering Entrance Exams:**
+- JEE Main (January/April) - NITs, IIITs
+- JEE Advanced (June) - IITs
+- BITSAT (May) - BITS Pilani
+- State Engineering Entrances - State colleges
+- VITEEE, SRMJEE, MET - Private universities
+
+**Other Options:**
+- BSc + Research path
+- Defense Services (NDA, CDS)
+- Architecture (JEE Paper 2, NATA)`
+        : `
+**Medical Entrance Exams:**
+- NEET UG (May) - MBBS/BDS/BAMS/BHMS
+- AIIMS (through NEET)
+- JIPMER (through NEET)
+
+**Allied Health Sciences:**
+- Nursing, Physiotherapy, Lab Technology
+- BSc Biotechnology, Microbiology
+- Pharmacy (B.Pharm)`;
+    } else {
+      pathwayContext = 'After 12th Commerce';
+      examGuidance = `
+**Professional Course Exams:**
+- CA Foundation (May/November) - Chartered Accountant
+- CS Foundation (June/December) - Company Secretary
+- CMA Foundation - Cost Accountant
+
+**University Entrances:**
+- CUET - Central Universities
+- IPMAT - IIM IPM Program
+- DU JAT - Delhi University
+- SET - Symbiosis Entrance
+- NPAT - NMIMS Programs
+
+**Other Paths:**
+- B.Com + CA/CS articleship
+- BBA + MBA
+- Economics Honours → Civil Services`;
+    }
     
     // Build career recommendations context
     if (assessmentContext.career_matches && assessmentContext.career_matches.length > 0) {
       careerContext = assessmentContext.career_matches
+        .slice(0, 5)
         .map((c, i) => {
           const details = [
-            `${i + 1}. ${c.name} (${c.matchScore}% match)`,
-            `   Description: ${c.description}`,
-            c.educationPath ? `   Education Path: ${c.educationPath.join(' → ')}` : '',
-            c.entranceExams ? `   Entrance Exams: ${c.entranceExams.join(', ')}` : '',
-            c.salaryRange ? `   Salary Range: ${c.salaryRange}` : '',
-            c.growthOutlook ? `   Growth: ${c.growthOutlook}` : '',
-            c.reasons ? `   Fit Reasons: ${c.reasons.join(', ')}` : '',
+            `${i + 1}. **${c.name}** (${c.matchScore}% match)`,
+            `   ${c.description}`,
+            c.educationPath ? `   📚 Path: ${c.educationPath.join(' → ')}` : '',
+            c.entranceExams ? `   📝 Exams: ${c.entranceExams.join(', ')}` : '',
+            c.salaryRange ? `   💰 Salary: ${c.salaryRange}` : '',
+            c.growthOutlook ? `   📈 Growth: ${c.growthOutlook}` : '',
+            c.reasons && c.reasons.length > 0 ? `   ✨ Why it fits: ${c.reasons.join(', ')}` : '',
           ].filter(Boolean).join('\n');
           return details;
         })
         .join('\n\n');
     }
     
-    // Build strengths context from scores
+    // Build strengths context from behavioral scores
     if (assessmentContext.scores) {
-      const dimensionLabels: Record<string, string> = {
-        technical_orientation: 'Technical Aptitude',
-        biological_orientation: 'Life Sciences Interest',
-        data_orientation: 'Analytical Thinking',
-        creative_orientation: 'Creativity',
-        business_orientation: 'Business Acumen',
-        financial_orientation: 'Financial Aptitude',
-        social_orientation: 'People Skills',
-        hands_on_orientation: 'Practical Skills',
-        pressure_tolerance: 'Stress Resilience',
-        exam_tolerance: 'Exam Readiness',
+      const traitLabels: Record<string, string> = {
+        analytical_reasoning: 'Analytical Thinking',
+        system_thinking: 'Systems Thinking',
+        people_involvement: 'People Skills',
+        persuasion_influence: 'Persuasion & Influence',
+        creative_expression: 'Creativity',
+        visual_thinking: 'Visual Thinking',
+        precision_orientation: 'Precision & Detail',
+        risk_appetite: 'Risk Appetite',
+        learning_depth_tolerance: 'Deep Learning',
+        ambiguity_tolerance: 'Adaptability',
+        execution_drive: 'Execution Drive',
+        planning_drive: 'Strategic Planning',
       };
       
       const sortedScores = Object.entries(assessmentContext.scores)
         .sort(([,a], [,b]) => b - a);
       
-      const topStrengths = sortedScores.slice(0, 3)
-        .map(([key, value]) => `${dimensionLabels[key] || key}: ${Math.round((value / 15) * 100)}%`)
+      const maxScore = Math.max(...Object.values(assessmentContext.scores), 1);
+      
+      const topStrengths = sortedScores.slice(0, 4)
+        .map(([key, value]) => `${traitLabels[key] || key} (${Math.round((value / maxScore) * 100)}%)`)
         .join(', ');
       
-      const areasToImprove = sortedScores.slice(-2)
-        .map(([key, value]) => `${dimensionLabels[key] || key}: ${Math.round((value / 15) * 100)}%`)
+      const growthAreas = sortedScores.slice(-2)
+        .map(([key, value]) => `${traitLabels[key] || key} (${Math.round((value / maxScore) * 100)}%)`)
         .join(', ');
       
-      strengthsContext = `Top Strengths: ${topStrengths}\nAreas for Growth: ${areasToImprove}`;
+      strengthsContext = `
+**Top Behavioral Strengths:** ${topStrengths}
+**Areas for Development:** ${growthAreas}`;
     }
   } else {
-    // Fallback to database-based recommendations
-    const { data: recommendations } = await supabaseClient
-      .from("career_recommendations")
-      .select("*, careers(*)")
-      .eq("student_id", studentId)
-      .order("match_score", { ascending: false })
-      .limit(5);
-    
-    careerContext = recommendations
-      ?.map((r: any) => `${r.careers?.name} (${r.match_score}% match)`)
-      .join(", ") || "No career matches yet";
+    // Fallback context
+    pathwayContext = "Assessment not yet completed";
   }
 
   const systemPrompt = language === "Hindi"
-    ? `आप PrepMate by Team Shadow के एक अनुभवी और सहायक करियर सलाहकार AI हैं जिसका नाम "करियर मेंटर" है।
+    ? `आप PrepMate के एक विशेषज्ञ करियर मेंटर AI हैं। आप एक टीम हैं:
+- करियर मनोवैज्ञानिक
+- भारतीय शिक्षा परामर्शदाता
+- प्रवेश परीक्षा विशेषज्ञ
+- कौशल विकास कोच
 
 **छात्र प्रोफाइल:**
 - नाम: ${profile?.display_name || "छात्र"}
 - कक्षा: ${profile?.grade || "अज्ञात"}
-${pathwayContext ? `- ${pathwayContext}` : ''}
+- मूल्यांकन: ${pathwayContext}
 - रुचियां: ${profile?.interests?.join(", ") || "अभी तक निर्दिष्ट नहीं"}
-- सीखने की गति: ${profile?.learning_speed || "औसत"}
 
-**मूल्यांकन के आधार पर करियर सिफारिशें:**
-${careerContext || 'कोई सिफारिश उपलब्ध नहीं'}
+**करियर सिफारिशें:**
+${careerContext || 'कोई सिफारिश उपलब्ध नहीं - मूल्यांकन पूरा करें'}
 
-${strengthsContext ? `**प्रोफाइल ताकत:**\n${strengthsContext}` : ''}
+${strengthsContext}
 
-**आपकी जिम्मेदारियां:**
-- छात्र के मूल्यांकन परिणामों के आधार पर व्यक्तिगत मार्गदर्शन दें
-- After 10th: Science/Commerce/Arts/Diploma के बीच चुनाव में मदद करें
-- After 12th Science: Engineering/Medical/Data Science/Design/Research में मार्गदर्शन दें
-- After 12th Commerce: CA/CS/MBA/Marketing/Finance में सलाह दें
-- एंट्रेंस एग्जाम, तैयारी रणनीति, और समयसीमा के बारे में बताएं
-- भारतीय शिक्षा प्रणाली के संदर्भ में सलाह दें
-- हमेशा हिंदी में जवाब दें
-- व्यक्तिगत, प्रेरक और सहायक बनें
-- विशिष्ट, क्रियाशील सलाह दें`
-    : `You are an experienced and supportive career advisor AI named "Career Mentor" from PrepMate by Team Shadow.
+${examGuidance}
+
+**आपकी क्षमताएं:**
+1. करियर मार्गदर्शन और विश्लेषण
+2. प्रवेश परीक्षा रणनीति और समयसीमा
+3. कौशल विकास योजना
+4. कॉलेज और कोर्स चयन सलाह
+5. स्टार्टअप और प्रोजेक्ट आइडियाज
+6. इंटर्नशिप और नौकरी तैयारी
+7. दिन-प्रतिदिन करियर परिदृश्य
+8. वेतन और विकास संभावनाएं
+
+**निर्देश:**
+- हमेशा छात्र के मूल्यांकन परिणामों के आधार पर व्यक्तिगत सलाह दें
+- विशिष्ट परीक्षा नाम, तिथियां और तैयारी रणनीति बताएं
+- प्रेरक और सहायक बनें
+- Markdown फ़ॉर्मेटिंग का उपयोग करें
+- हिंदी में जवाब दें`
+    : `You are an expert Career Mentor AI from PrepMate by Team Shadow. You embody a team of:
+- Career Psychologist
+- Behavioral Scientist  
+- Indian Education Counselor
+- Entrance Exam Specialist
+- Skills Development Coach
 
 **Student Profile:**
 - Name: ${profile?.display_name || "Student"}
 - Grade: ${profile?.grade || "Not specified"}
-${pathwayContext ? `- ${pathwayContext}` : ''}
+- Assessment Type: ${pathwayContext}
 - Interests: ${profile?.interests?.join(", ") || "Not yet specified"}
-- Learning pace: ${profile?.learning_speed || "average"}
+- Learning Pace: ${profile?.learning_speed || "average"}
 
-**Career Recommendations from Assessment:**
-${careerContext || 'No recommendations available'}
+**Career Recommendations from Behavioral Assessment:**
+${careerContext || 'No recommendations yet - student should complete assessment first'}
 
-${strengthsContext ? `**Profile Strengths:**\n${strengthsContext}` : ''}
+${strengthsContext}
 
-**Your Responsibilities:**
-- Provide personalized guidance based on the student's assessment results
-- For After 10th students: Help choose between Science/Commerce/Arts/Diploma streams
-- For After 12th Science: Guide towards Engineering/Medical/Data Science/Design/Research paths
-- For After 12th Commerce: Advise on CA/CS/MBA/Marketing/Finance careers
-- Explain entrance exams, preparation strategies, and timelines specific to Indian education
-- JEE, NEET, CAT, CA Foundation, CLAT - provide exam-specific guidance
-- Discuss salary ranges, job prospects, and growth outlook realistically
-- Be personalized, encouraging, and provide specific actionable advice
-- Use bullet points and formatting for clarity
-- If asked about careers outside their pathway, explain the transition possibilities
-- Always ground your advice in their assessment results and match scores`;
+${examGuidance}
+
+**Your Capabilities - You Can Help With:**
+1. **Career Analysis** - Deep dive into any career path, daily work life, challenges, rewards
+2. **Entrance Exam Strategy** - Specific exam names, dates, syllabus, preparation timeline
+3. **Skill Development Plans** - What to learn, resources, certifications
+4. **College & Course Selection** - Best institutions, cutoffs, admission process
+5. **Startup & Project Ideas** - Relevant to student's interests and skills
+6. **Internship & Job Prep** - Resume, interview, networking tips
+7. **Day-in-the-Life Scenarios** - Realistic stories of professionals in different careers
+8. **Salary & Growth Insights** - Realistic expectations and career progression
+9. **Alternative Paths** - If someone wants to switch streams or explore unconventional careers
+
+**Response Guidelines:**
+- ALWAYS ground your advice in the student's assessment results and match scores
+- Provide specific exam names, dates, and preparation strategies
+- Use bullet points, numbered lists, and headers for clarity
+- Be encouraging but realistic about challenges
+- Include actionable next steps
+- If asked about career outside their pathway, explain transition possibilities
+- Generate detailed day-in-the-life scenarios when asked
+- Use markdown formatting for better readability
+- Be warm, supportive, and personalized in your responses`;
 
   try {
     // Build messages array with history
     const messages = [
       { role: "system", content: systemPrompt },
-      ...chatHistory.slice(-10).map(msg => ({ 
+      ...chatHistory.slice(-12).map(msg => ({ 
         role: msg.role as "user" | "assistant", 
         content: msg.content 
       })),
@@ -576,7 +654,8 @@ ${strengthsContext ? `**Profile Strengths:**\n${strengthsContext}` : ''}
       body: JSON.stringify({
         model: DEFAULT_MODEL,
         messages,
-        max_tokens: 1000,
+        max_tokens: 1500,
+        temperature: 0.7,
       }),
     });
 
@@ -634,7 +713,7 @@ ${strengthsContext ? `**Profile Strengths:**\n${strengthsContext}` : ''}
 
 function getDefaultChatResponse(language: string): string {
   if (language === "Hindi") {
-    return "मैं आपकी करियर मार्गदर्शन में मदद करने के लिए यहां हूं। कृपया अपना प्रश्न पूछें और मैं आपको सर्वोत्तम सलाह दूंगा!";
+    return "मैं आपकी करियर मार्गदर्शन में मदद करने के लिए यहां हूं। कृपया अपना प्रश्न पूछें - करियर, परीक्षा, कॉलेज, या कौशल के बारे में कुछ भी पूछ सकते हैं!";
   }
-  return "I'm here to help with your career guidance. Please feel free to ask any questions and I'll provide you with the best advice!";
+  return "I'm here to help with your career guidance! Feel free to ask about careers, entrance exams, college selection, skill development, or anything else. I'll provide personalized advice based on your assessment results.";
 }
