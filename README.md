@@ -1,58 +1,118 @@
-# Welcome to your Lovable project
+# 🎓 Prepmate — AI-Powered Career Guidance & Study Planning Platform
 
-## Project info
+**Prepmate** is a behavioural-AI driven career guidance and preparation platform for Indian students after  
+**Class 10, Class 12 (Science) and Class 12 (Commerce).**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Unlike traditional career quizzes, Prepmate does not ask *“Which career do you want?”*.  
+It understands **how a student naturally thinks, works and learns** and then maps this behavioural profile to realistic academic and career pathways.
 
-## How can I edit this code?
+🌐 Live App  
+👉 https://shadowpvt.lovable.app
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Why Prepmate?
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Students often choose careers based on marks, peer pressure or trends.  
+Prepmate helps students make **clear, realistic and psychologically aligned decisions** using AI-driven behavioural assessment.
 
-Changes made via Lovable will be committed automatically to this repo.
+Prepmate is a **decision-support system**, not a random career predictor.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🧠 Core Capabilities
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1️⃣ Behavioural Career Assessment Engine
 
-Follow these steps:
+A serious, psychology-oriented assessment that:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- uses situation-based and trade-off questions
+- hides all career and stream names inside the test
+- measures how students:
+  - solve problems
+  - react to pressure and uncertainty
+  - prefer to work (people / systems / ideas / execution)
+  - tolerate deep learning and long preparation
+- dynamically adapts questions to reduce uncertainty
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Assessment tracks:
+- After 10th
+- After 12th – Science
+- After 12th – Commerce
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### 2️⃣ Explainable Career Recommendation Engine
 
-**Edit a file directly in GitHub**
+For every student, Prepmate generates:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- top suitable academic / career paths
+- behavioural and work-style profile
+- career fit confidence score
+- regret-risk indicator
+- flexibility and future mobility insight
 
-**Use GitHub Codespaces**
+All recommendations are explainable and transparent.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+### 3️⃣ AI Career Mentor (Chat Interface)
 
-This project is built with:
+A controlled AI mentor that:
+
+- explains results in simple and student-friendly language
+- answers follow-up career questions
+- generates parent-friendly summaries
+- supports regional language responses
+
+The mentor always uses the student’s internal profile and never provides generic advice.
+
+---
+
+### 4️⃣ Personalized Study Planner
+
+A realistic weekly study planner that:
+
+- uses student-entered weak areas
+- adapts to individual learning pace
+- avoids overload and burnout
+- inserts revision and buffer sessions
+- automatically re-plans when sessions are missed
+
+---
+
+### 5️⃣ Career Progress & Readiness Dashboard
+
+Prepmate tracks decision and preparation maturity, not marks.
+
+The Progress tab shows:
+
+- Career clarity score
+- Direction stability over time
+- Decision-style fingerprint
+- Career fit confidence trend
+- Regret-risk trend
+- Study discipline and consistency
+- Pace and workload health
+- Parent-friendly progress summary
+
+---
+
+## ✨ Unique Highlights
+
+- Career reality micro-simulation (real-life scenario engine)
+- Decision-style fingerprint
+- Career regret-risk indicator
+- Blind-spot and mismatch detection
+- Career flexibility index
+- Parent–student alignment view
+- Confidence vs readiness mismatch alerts
+- Path-switch safety map
+- Behavioural stability tracking across retakes
+
+---
+
+## 🧩 Technology Stack
 
 - Vite
 - TypeScript
@@ -60,14 +120,25 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 🛠 Development
 
-## Can I connect a custom domain to my Lovable project?
+You can edit this project in multiple ways.
 
-Yes, you can!
+### ▶ Using Lovable
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Open your project in Lovable and start prompting.  
+All changes are automatically committed to this repository.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+### ▶ Local development
+
+Make sure Node.js and npm are installed (recommended via nvm).
+
+```bash
+git clone <YOUR_GIT_URL>
+cd <YOUR_PROJECT_NAME>
+npm install
+npm run dev
