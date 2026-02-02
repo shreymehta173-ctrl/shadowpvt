@@ -5,6 +5,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { 
   Lightbulb, 
   ChevronRight, 
@@ -56,6 +58,7 @@ const initialScores: TraitDimensions = {
 };
 
 export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
+  const { language, t } = useLanguage();
   const [step, setStep] = useState<'class-select' | 'stream-select' | 'assessment'>('class-select');
   const [answers, setAnswers] = useState<AssessmentAnswers>({
     completedClass: null,
@@ -140,11 +143,14 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 className="h-24 w-auto"
               />
             </div>
+            <div className="flex justify-center mb-4">
+              <LanguageToggle />
+            </div>
             <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
-              Career Discovery Assessment
+              {t('Career Discovery Assessment', 'करियर खोज मूल्यांकन')}
             </CardTitle>
             <p className="text-muted-foreground mt-2">
-              Shape Your Career Path - Discover what suits you best
+              {t('Shape Your Career Path - Discover what suits you best', 'अपने करियर का रास्ता बनाएं - जानें कि आपके लिए सबसे अच्छा क्या है')}
             </p>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
@@ -153,11 +159,12 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-warning mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-warning">Important Disclaimer</p>
+                  <p className="text-sm font-medium text-warning">{t('Important Disclaimer', 'महत्वपूर्ण अस्वीकरण')}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    This is a behavioral assessment tool to help you explore suitable paths. 
-                    Results should be discussed with parents, teachers, and career counselors 
-                    before making important decisions.
+                    {t(
+                      'This is a behavioral assessment tool to help you explore suitable paths. Results should be discussed with parents, teachers, and career counselors before making important decisions.',
+                      'यह एक व्यवहारिक मूल्यांकन उपकरण है जो आपको उपयुक्त रास्ते खोजने में मदद करता है। महत्वपूर्ण निर्णय लेने से पहले परिणामों पर माता-पिता, शिक्षकों और करियर परामर्शदाताओं के साथ चर्चा करनी चाहिए।'
+                    )}
                   </p>
                 </div>
               </div>
@@ -165,10 +172,10 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
 
             <div className="text-center mb-8">
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Which class have you completed?
+                {t('Which class have you completed?', 'आपने कौन सी कक्षा पूरी की है?')}
               </h3>
               <p className="text-muted-foreground text-sm">
-                This determines your assessment path
+                {t('This determines your assessment path', 'यह आपके मूल्यांकन मार्ग को निर्धारित करता है')}
               </p>
             </div>
 
@@ -180,9 +187,9 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Brain className="h-6 w-6 text-primary" />
                 </div>
-                <h4 className="font-semibold text-foreground mb-1">After 10th Standard</h4>
+                <h4 className="font-semibold text-foreground mb-1">{t('After 10th Standard', '10वीं के बाद')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Explore all possible academic paths
+                  {t('Explore all possible academic paths', 'सभी संभव शैक्षणिक मार्गों का पता लगाएं')}
                 </p>
               </button>
 
@@ -193,9 +200,9 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 <div className="w-12 h-12 rounded-xl bg-info/10 flex items-center justify-center mb-4 group-hover:bg-info/20 transition-colors">
                   <Zap className="h-6 w-6 text-info" />
                 </div>
-                <h4 className="font-semibold text-foreground mb-1">After 12th Science</h4>
+                <h4 className="font-semibold text-foreground mb-1">{t('After 12th Science', '12वीं विज्ञान के बाद')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Technical, healthcare, research paths
+                  {t('Technical, healthcare, research paths', 'तकनीकी, स्वास्थ्य, अनुसंधान मार्ग')}
                 </p>
               </button>
 
@@ -206,9 +213,9 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center mb-4 group-hover:bg-warning/20 transition-colors">
                   <Users className="h-6 w-6 text-warning" />
                 </div>
-                <h4 className="font-semibold text-foreground mb-1">After 12th Commerce</h4>
+                <h4 className="font-semibold text-foreground mb-1">{t('After 12th Commerce', '12वीं वाणिज्य के बाद')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Business, finance, management paths
+                  {t('Business, finance, management paths', 'व्यापार, वित्त, प्रबंधन मार्ग')}
                 </p>
               </button>
             </div>
@@ -217,11 +224,11 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
               <div className="flex items-center justify-center gap-8 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  <span>15 Questions</span>
+                  <span>{t('15 Questions', '15 प्रश्न')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4" />
-                  <span>Private & Secure</span>
+                  <span>{t('Private & Secure', 'निजी और सुरक्षित')}</span>
                 </div>
               </div>
             </div>
@@ -237,11 +244,14 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
       <div className="min-h-[80vh] flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-background via-background to-primary/5">
         <Card className="max-w-2xl w-full border-border/50 shadow-xl bg-card">
           <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <LanguageToggle />
+            </div>
             <CardTitle className="text-xl md:text-2xl font-bold text-foreground">
-              Select Your Stream
+              {t('Select Your Stream', 'अपनी स्ट्रीम चुनें')}
             </CardTitle>
             <p className="text-muted-foreground">
-              Which subjects did you study in 11th-12th?
+              {t('Which subjects did you study in 11th-12th?', '11वीं-12वीं में आपने कौन से विषय पढ़े?')}
             </p>
           </CardHeader>
           <CardContent className="p-6">
@@ -250,24 +260,24 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 onClick={() => handleStreamSelect('PCM')}
                 className="p-5 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
               >
-                <h4 className="font-semibold text-foreground">PCM (Physics, Chemistry, Mathematics)</h4>
-                <p className="text-sm text-muted-foreground mt-1">Technical and analytical paths</p>
+                <h4 className="font-semibold text-foreground">{t('PCM (Physics, Chemistry, Mathematics)', 'PCM (भौतिकी, रसायन, गणित)')}</h4>
+                <p className="text-sm text-muted-foreground mt-1">{t('Technical and analytical paths', 'तकनीकी और विश्लेषणात्मक मार्ग')}</p>
               </button>
               
               <button
                 onClick={() => handleStreamSelect('PCB')}
                 className="p-5 rounded-xl border-2 border-border hover:border-success hover:bg-success/5 transition-all text-left"
               >
-                <h4 className="font-semibold text-foreground">PCB (Physics, Chemistry, Biology)</h4>
-                <p className="text-sm text-muted-foreground mt-1">Life sciences and healthcare paths</p>
+                <h4 className="font-semibold text-foreground">{t('PCB (Physics, Chemistry, Biology)', 'PCB (भौतिकी, रसायन, जीवविज्ञान)')}</h4>
+                <p className="text-sm text-muted-foreground mt-1">{t('Life sciences and healthcare paths', 'जीवन विज्ञान और स्वास्थ्य सेवा मार्ग')}</p>
               </button>
               
               <button
                 onClick={() => handleStreamSelect('PCMB')}
                 className="p-5 rounded-xl border-2 border-border hover:border-info hover:bg-info/5 transition-all text-left"
               >
-                <h4 className="font-semibold text-foreground">PCMB (All Four Subjects)</h4>
-                <p className="text-sm text-muted-foreground mt-1">Open to all paths</p>
+                <h4 className="font-semibold text-foreground">{t('PCMB (All Four Subjects)', 'PCMB (सभी चार विषय)')}</h4>
+                <p className="text-sm text-muted-foreground mt-1">{t('Open to all paths', 'सभी मार्गों के लिए खुला')}</p>
               </button>
             </div>
 
@@ -277,7 +287,7 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
               className="mt-6"
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
-              Back
+              {t('Back', 'वापस')}
             </Button>
           </CardContent>
         </Card>
@@ -289,26 +299,34 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
   const currentQuestion = questions[currentQuestionIndex];
   
   if (!currentQuestion) {
-    return <div className="p-8 text-center text-muted-foreground">Loading questions...</div>;
+    return <div className="p-8 text-center text-muted-foreground">{t('Loading questions...', 'प्रश्न लोड हो रहे हैं...')}</div>;
   }
 
   // Get question type badge
   const getQuestionTypeBadge = (type: string) => {
     switch (type) {
       case 'situational':
-        return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">Scenario</Badge>;
+        return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">{t('Scenario', 'परिदृश्य')}</Badge>;
       case 'forced_choice':
-        return <Badge variant="outline" className="bg-info/10 text-info border-info/30">Preference</Badge>;
+        return <Badge variant="outline" className="bg-info/10 text-info border-info/30">{t('Preference', 'प्राथमिकता')}</Badge>;
       case 'emotional':
-        return <Badge variant="outline" className="bg-success/10 text-success border-success/30">Reflection</Badge>;
+        return <Badge variant="outline" className="bg-success/10 text-success border-success/30">{t('Reflection', 'प्रतिबिंब')}</Badge>;
       case 'discomfort':
-        return <Badge variant="outline" className="bg-warning/10 text-warning border-warning/30">Challenge</Badge>;
+        return <Badge variant="outline" className="bg-warning/10 text-warning border-warning/30">{t('Challenge', 'चुनौती')}</Badge>;
       case 'validation':
-        return <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30">Summary</Badge>;
+        return <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30">{t('Summary', 'सारांश')}</Badge>;
       default:
         return null;
     }
   };
+
+  // Get translated content
+  const questionText = language === 'hi' && currentQuestion.questionHi 
+    ? currentQuestion.questionHi 
+    : currentQuestion.question;
+  const contextText = language === 'hi' && currentQuestion.contextHi 
+    ? currentQuestion.contextHi 
+    : currentQuestion.context;
 
   return (
     <div className="min-h-[80vh] p-4 md:p-8 bg-gradient-to-br from-background via-background to-primary/5">
@@ -319,13 +337,14 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
             <div className="flex items-center gap-2">
               {getQuestionTypeBadge(currentQuestion.type)}
               <Badge variant="outline" className="bg-secondary">
-                {answers.completedClass === '10th' && 'After 10th'}
-                {answers.completedClass === '12th_science' && `12th Science (${answers.stream12th})`}
-                {answers.completedClass === '12th_commerce' && '12th Commerce'}
+                {answers.completedClass === '10th' && t('After 10th', '10वीं के बाद')}
+                {answers.completedClass === '12th_science' && `${t('12th Science', '12वीं विज्ञान')} (${answers.stream12th})`}
+                {answers.completedClass === '12th_commerce' && t('12th Commerce', '12वीं वाणिज्य')}
               </Badge>
+              <LanguageToggle />
             </div>
             <span className="text-sm font-medium text-muted-foreground">
-              {currentQuestionIndex + 1} of {questions.length}
+              {currentQuestionIndex + 1} {t('of', 'में से')} {questions.length}
             </span>
           </div>
           <Progress value={progress} className="h-2 bg-muted" />
@@ -335,17 +354,17 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
         <Card className="border-border/50 shadow-lg bg-card">
           <CardContent className="p-6 md:p-8">
             {/* Context for situational questions */}
-            {currentQuestion.context && (
+            {contextText && (
               <div className="bg-muted/50 rounded-lg p-4 mb-6 border border-border/50">
                 <p className="text-muted-foreground italic">
-                  {currentQuestion.context}
+                  {contextText}
                 </p>
               </div>
             )}
 
             <div className="mb-8">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground leading-relaxed">
-                {currentQuestion.question}
+                {questionText}
               </h2>
             </div>
 
@@ -354,23 +373,28 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
               onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
               className="space-y-3"
             >
-              {currentQuestion.options.map((option) => (
-                <div
-                  key={option.value}
-                  className={`assessment-option ${
-                    answers.responses[currentQuestion.id] === option.value ? 'selected' : ''
-                  }`}
-                  onClick={() => handleAnswer(currentQuestion.id, option.value)}
-                >
-                  <RadioGroupItem value={option.value} id={option.value} className="mt-0.5" />
-                  <Label
-                    htmlFor={option.value}
-                    className="flex-1 cursor-pointer text-base text-foreground leading-relaxed"
+              {currentQuestion.options.map((option) => {
+                const optionLabel = language === 'hi' && option.labelHi 
+                  ? option.labelHi 
+                  : option.label;
+                return (
+                  <div
+                    key={option.value}
+                    className={`assessment-option ${
+                      answers.responses[currentQuestion.id] === option.value ? 'selected' : ''
+                    }`}
+                    onClick={() => handleAnswer(currentQuestion.id, option.value)}
                   >
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
+                    <RadioGroupItem value={option.value} id={option.value} className="mt-0.5" />
+                    <Label
+                      htmlFor={option.value}
+                      className="flex-1 cursor-pointer text-base text-foreground leading-relaxed"
+                    >
+                      {optionLabel}
+                    </Label>
+                  </div>
+                );
+              })}
             </RadioGroup>
 
             {/* Navigation */}
@@ -387,7 +411,7 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                 className="text-muted-foreground"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
-                Back
+                {t('Back', 'वापस')}
               </Button>
 
               {isLastQuestion ? (
@@ -396,7 +420,7 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                   disabled={!canProceed}
                   className="bg-gradient-primary hover:opacity-90 text-primary-foreground px-8"
                 >
-                  View Results
+                  {t('View Results', 'परिणाम देखें')}
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               ) : (
@@ -405,7 +429,7 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
                   disabled={!canProceed}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
-                  Next Question
+                  {t('Next Question', 'अगला प्रश्न')}
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               )}
@@ -416,7 +440,7 @@ export function CareerAssessment({ onComplete }: CareerAssessmentProps) {
         {/* Helper Info */}
         <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Lightbulb className="h-4 w-4" />
-          <span>Answer honestly - there are no right or wrong answers</span>
+          <span>{t('Answer honestly - there are no right or wrong answers', 'ईमानदारी से उत्तर दें - कोई सही या गलत उत्तर नहीं है')}</span>
         </div>
       </div>
     </div>
