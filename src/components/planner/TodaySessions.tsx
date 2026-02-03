@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Sun, Moon, Clock, CheckCircle } from 'lucide-react';
 import { SessionCard } from './SessionCard';
 import type { StudySession } from '@/hooks/useStudyPlanner';
@@ -15,6 +16,7 @@ interface TodaySessionsProps {
 }
 
 export function TodaySessions({ sessions, onUpdateSession }: TodaySessionsProps) {
+  const { t } = useLanguage();
   const today = new Date().toISOString().split('T')[0];
   
   const todaySessions = useMemo(() => {
@@ -36,9 +38,21 @@ export function TodaySessions({ sessions, onUpdateSession }: TodaySessionsProps)
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: 'Good Morning', icon: Sun, color: 'text-warning' };
-    if (hour < 17) return { text: 'Good Afternoon', icon: Sun, color: 'text-primary' };
-    return { text: 'Good Evening', icon: Moon, color: 'text-purple-500' };
+    if (hour < 12) return { 
+      text: t('Good Morning', 'सुप्रभात'), 
+      icon: Sun, 
+      color: 'text-warning' 
+    };
+    if (hour < 17) return { 
+      text: t('Good Afternoon', 'शुभ दोपहर'), 
+      icon: Sun, 
+      color: 'text-primary' 
+    };
+    return { 
+      text: t('Good Evening', 'शुभ संध्या'), 
+      icon: Moon, 
+      color: 'text-purple-500' 
+    };
   };
 
   const greeting = getGreeting();
@@ -49,9 +63,9 @@ export function TodaySessions({ sessions, onUpdateSession }: TodaySessionsProps)
       <Card className="border-border/50 bg-gradient-to-br from-card/80 to-muted/30 backdrop-blur-sm">
         <CardContent className="py-8 text-center">
           <CheckCircle className="h-12 w-12 mx-auto mb-3 text-success" />
-          <h3 className="text-lg font-semibold mb-1">No Sessions Today</h3>
+          <h3 className="text-lg font-semibold mb-1">{t('No Sessions Today', 'आज कोई सत्र नहीं')}</h3>
           <p className="text-muted-foreground">
-            Enjoy your rest day or use the buffer time for extra practice!
+            {t('Enjoy your rest day or use the buffer time for extra practice!', 'आराम के दिन का आनंद लें या अतिरिक्त अभ्यास के लिए समय का उपयोग करें!')}
           </p>
         </CardContent>
       </Card>
@@ -70,7 +84,7 @@ export function TodaySessions({ sessions, onUpdateSession }: TodaySessionsProps)
               {greeting.text}
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Today's Study Sessions
+              {t("Today's Study Sessions", 'आज के अध्ययन सत्र')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -83,7 +97,7 @@ export function TodaySessions({ sessions, onUpdateSession }: TodaySessionsProps)
             </Badge>
             <Badge variant="outline" className="gap-1">
               <Clock className="h-3 w-3" />
-              {stats.completedMinutes}/{stats.totalMinutes} mins
+              {stats.completedMinutes}/{stats.totalMinutes} {t('mins', 'मिनट')}
             </Badge>
           </div>
         </div>
