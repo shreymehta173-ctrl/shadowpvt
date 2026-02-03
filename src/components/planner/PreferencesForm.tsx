@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Settings, Clock, Zap, Calendar, Save } from 'lucide-react';
 import type { StudyPreferences } from '@/hooks/useStudyPlanner';
 
@@ -14,16 +15,17 @@ interface PreferencesFormProps {
 }
 
 const weekDays = [
-  { id: 'monday', label: 'Mon' },
-  { id: 'tuesday', label: 'Tue' },
-  { id: 'wednesday', label: 'Wed' },
-  { id: 'thursday', label: 'Thu' },
-  { id: 'friday', label: 'Fri' },
-  { id: 'saturday', label: 'Sat' },
-  { id: 'sunday', label: 'Sun' },
+  { id: 'monday', en: 'Mon', hi: 'सोम' },
+  { id: 'tuesday', en: 'Tue', hi: 'मंगल' },
+  { id: 'wednesday', en: 'Wed', hi: 'बुध' },
+  { id: 'thursday', en: 'Thu', hi: 'गुरु' },
+  { id: 'friday', en: 'Fri', hi: 'शुक्र' },
+  { id: 'saturday', en: 'Sat', hi: 'शनि' },
+  { id: 'sunday', en: 'Sun', hi: 'रवि' },
 ];
 
 export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     learning_pace: 'medium' as 'slow' | 'medium' | 'fast',
     daily_time_limit: 120,
@@ -74,14 +76,14 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
           <div>
             <CardTitle className="text-xl flex items-center gap-2">
               <Settings className="h-5 w-5 text-primary" />
-              Study Preferences
+              {t('Study Preferences', 'अध्ययन प्राथमिकताएं')}
             </CardTitle>
-            <CardDescription>Customize your study schedule</CardDescription>
+            <CardDescription>{t('Customize your study schedule', 'अपना अध्ययन कार्यक्रम कस्टमाइज़ करें')}</CardDescription>
           </div>
           {hasChanges && (
             <Button onClick={handleSave} size="sm" className="gap-1">
               <Save className="h-4 w-4" />
-              Save
+              {t('Save', 'सेव करें')}
             </Button>
           )}
         </div>
@@ -91,27 +93,27 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
         <div className="space-y-3">
           <Label className="flex items-center gap-2">
             <Zap className="h-4 w-4 text-warning" />
-            Learning Pace
+            {t('Learning Pace', 'सीखने की गति')}
           </Label>
           <div className="grid grid-cols-3 gap-2">
-            {(['slow', 'medium', 'fast'] as const).map((pace) => (
+            {([
+              { value: 'slow', en: 'Slow', hi: 'धीमी', emoji: '🐢' },
+              { value: 'medium', en: 'Medium', hi: 'मध्यम', emoji: '🚶' },
+              { value: 'fast', en: 'Fast', hi: 'तेज़', emoji: '🏃' },
+            ] as const).map((pace) => (
               <Button
-                key={pace}
-                variant={formData.learning_pace === pace ? 'default' : 'outline'}
-                className="capitalize"
-                onClick={() => handleChange('learning_pace', pace)}
+                key={pace.value}
+                variant={formData.learning_pace === pace.value ? 'default' : 'outline'}
+                onClick={() => handleChange('learning_pace', pace.value)}
               >
-                {pace === 'slow' && '🐢 '}
-                {pace === 'medium' && '🚶 '}
-                {pace === 'fast' && '🏃 '}
-                {pace}
+                {pace.emoji} {language === 'hi' ? pace.hi : pace.en}
               </Button>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {formData.learning_pace === 'slow' && 'Shorter, more frequent sessions with extra revision'}
-            {formData.learning_pace === 'medium' && 'Balanced sessions with regular revision'}
-            {formData.learning_pace === 'fast' && 'Longer sessions with less frequent revision'}
+            {formData.learning_pace === 'slow' && t('Shorter, more frequent sessions with extra revision', 'अतिरिक्त पुनरावृत्ति के साथ छोटे, अधिक बार सत्र')}
+            {formData.learning_pace === 'medium' && t('Balanced sessions with regular revision', 'नियमित पुनरावृत्ति के साथ संतुलित सत्र')}
+            {formData.learning_pace === 'fast' && t('Longer sessions with less frequent revision', 'कम बार पुनरावृत्ति के साथ लंबे सत्र')}
           </p>
         </div>
 
@@ -120,7 +122,7 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              Daily Study Time (mins)
+              {t('Daily Study Time (mins)', 'दैनिक अध्ययन समय (मिनट)')}
             </Label>
             <Input
               type="number"
@@ -132,7 +134,7 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Preferred Time</Label>
+            <Label>{t('Preferred Time', 'पसंदीदा समय')}</Label>
             <Select
               value={formData.preferred_study_time}
               onValueChange={(v) => handleChange('preferred_study_time', v)}
@@ -141,10 +143,10 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="morning">🌅 Morning (6-10 AM)</SelectItem>
-                <SelectItem value="afternoon">☀️ Afternoon (12-4 PM)</SelectItem>
-                <SelectItem value="evening">🌆 Evening (5-8 PM)</SelectItem>
-                <SelectItem value="night">🌙 Night (8-11 PM)</SelectItem>
+                <SelectItem value="morning">🌅 {t('Morning (6-10 AM)', 'सुबह (6-10 बजे)')}</SelectItem>
+                <SelectItem value="afternoon">☀️ {t('Afternoon (12-4 PM)', 'दोपहर (12-4 बजे)')}</SelectItem>
+                <SelectItem value="evening">🌆 {t('Evening (5-8 PM)', 'शाम (5-8 बजे)')}</SelectItem>
+                <SelectItem value="night">🌙 {t('Night (8-11 PM)', 'रात (8-11 बजे)')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -153,7 +155,7 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
         {/* Session Settings */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Session Length (mins)</Label>
+            <Label>{t('Session Length (mins)', 'सत्र की अवधि (मिनट)')}</Label>
             <Select
               value={String(formData.session_duration)}
               onValueChange={(v) => handleChange('session_duration', parseInt(v))}
@@ -162,16 +164,16 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="25">25 mins (Pomodoro)</SelectItem>
-                <SelectItem value="30">30 mins</SelectItem>
-                <SelectItem value="45">45 mins</SelectItem>
-                <SelectItem value="60">60 mins</SelectItem>
-                <SelectItem value="90">90 mins</SelectItem>
+                <SelectItem value="25">25 {t('mins (Pomodoro)', 'मिनट (पोमोडोरो)')}</SelectItem>
+                <SelectItem value="30">30 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="45">45 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="60">60 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="90">90 {t('mins', 'मिनट')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Break Duration (mins)</Label>
+            <Label>{t('Break Duration (mins)', 'ब्रेक अवधि (मिनट)')}</Label>
             <Select
               value={String(formData.break_duration)}
               onValueChange={(v) => handleChange('break_duration', parseInt(v))}
@@ -180,10 +182,10 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="5">5 mins</SelectItem>
-                <SelectItem value="10">10 mins</SelectItem>
-                <SelectItem value="15">15 mins</SelectItem>
-                <SelectItem value="20">20 mins</SelectItem>
+                <SelectItem value="5">5 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="10">10 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="15">15 {t('mins', 'मिनट')}</SelectItem>
+                <SelectItem value="20">20 {t('mins', 'मिनट')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -193,7 +195,7 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
         <div className="space-y-3">
           <Label className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-success" />
-            Study Days
+            {t('Study Days', 'अध्ययन के दिन')}
           </Label>
           <div className="flex flex-wrap gap-2">
             {weekDays.map((day) => (
@@ -205,7 +207,7 @@ export function PreferencesForm({ preferences, onSave }: PreferencesFormProps) {
                   checked={formData.preferred_study_days.includes(day.id)}
                   onCheckedChange={() => toggleDay(day.id)}
                 />
-                <span className="text-sm">{day.label}</span>
+                <span className="text-sm">{language === 'hi' ? day.hi : day.en}</span>
               </label>
             ))}
           </div>

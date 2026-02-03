@@ -15,15 +15,6 @@ const STEPS = [
   { id: 'welcome', title: 'Welcome' },
   { id: 'profile', title: 'Profile' },
   { id: 'preferences', title: 'Preferences' },
-  { id: 'interests', title: 'Interests' },
-];
-
-const INTERESTS = [
-  { id: 'mathematics', label: 'Mathematics', icon: '📐' },
-  { id: 'programming', label: 'Programming', icon: '💻' },
-  { id: 'science', label: 'Science', icon: '🔬' },
-  { id: 'language-arts', label: 'Language Arts', icon: '📚' },
-  { id: 'data-science', label: 'Data Science', icon: '📊' },
 ];
 
 export default function Onboarding() {
@@ -38,7 +29,6 @@ export default function Onboarding() {
     grade: profile?.grade || '',
     dailyStudyTime: profile?.daily_study_time?.toString() || '30',
     learningSpeed: profile?.learning_speed || 'average',
-    interests: profile?.interests || [],
   });
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
@@ -55,15 +45,6 @@ export default function Onboarding() {
     }
   };
 
-  const toggleInterest = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest],
-    }));
-  };
-
   const handleComplete = async () => {
     setIsSubmitting(true);
 
@@ -75,7 +56,6 @@ export default function Onboarding() {
           grade: formData.grade || null,
           daily_study_time: parseInt(formData.dailyStudyTime) || 30,
           learning_speed: formData.learningSpeed as any,
-          interests: formData.interests,
           onboarding_completed: true,
         })
         .eq('id', profile?.id);
@@ -300,51 +280,8 @@ export default function Onboarding() {
                   </Button>
                   <Button 
                     className="flex-1 bg-gradient-primary hover:opacity-90"
-                    onClick={handleNext}
-                  >
-                    Continue <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Step 3: Interests */}
-          {currentStep === 3 && (
-            <Card className="animate-fade-in">
-              <CardHeader>
-                <CardTitle className="text-2xl">What do you want to learn?</CardTitle>
-                <CardDescription>
-                  Select the topics you're interested in (choose at least one)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {INTERESTS.map((interest) => (
-                    <button
-                      key={interest.id}
-                      type="button"
-                      onClick={() => toggleInterest(interest.id)}
-                      className={`flex items-center gap-4 p-4 rounded-lg border text-left transition-all ${
-                        formData.interests.includes(interest.id)
-                          ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <span className="text-3xl">{interest.icon}</span>
-                      <span className="font-medium text-foreground">{interest.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <Button variant="outline" onClick={handleBack}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                  </Button>
-                  <Button 
-                    className="flex-1 bg-gradient-primary hover:opacity-90"
                     onClick={handleComplete}
-                    disabled={formData.interests.length === 0 || isSubmitting}
+                    disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       <>

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   BookOpen, 
   RefreshCw, 
@@ -47,6 +48,7 @@ const statusConfig = {
 };
 
 export function SessionCard({ session, compact = false, onUpdateStatus }: SessionCardProps) {
+  const { t } = useLanguage();
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackStatus, setFeedbackStatus] = useState<'completed' | 'partial' | 'skipped'>('completed');
   const [notes, setNotes] = useState('');
@@ -86,7 +88,7 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
             <span className="text-xs font-medium truncate">{session.topic}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">{session.duration_minutes}m</span>
+            <span className="text-xs text-muted-foreground">{session.duration_minutes}{t('m', 'मि')}</span>
             <StatusIcon className={`h-3 w-3 ${status.color}`} />
           </div>
         </div>
@@ -94,14 +96,14 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
         <Dialog open={showFeedback} onOpenChange={setShowFeedback}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Session Feedback</DialogTitle>
+              <DialogTitle>{t('Session Feedback', 'सत्र प्रतिक्रिया')}</DialogTitle>
               <DialogDescription>
                 {session.subject}: {session.topic}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>How did it go?</Label>
+                <Label>{t('How did it go?', 'कैसा रहा?')}</Label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['completed', 'partial', 'skipped'] as const).map((s) => (
                     <Button
@@ -113,14 +115,14 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
                       {s === 'completed' && '✅ '}
                       {s === 'partial' && '⚠️ '}
                       {s === 'skipped' && '❌ '}
-                      {s}
+                      {s === 'completed' ? t('Completed', 'पूर्ण') : s === 'partial' ? t('Partial', 'आंशिक') : t('Skipped', 'छोड़ा')}
                     </Button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>Effectiveness (1-5)</Label>
+                <Label>{t('Effectiveness (1-5)', 'प्रभावशीलता (1-5)')}</Label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Button
@@ -141,9 +143,9 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
               </div>
 
               <div className="space-y-2">
-                <Label>Notes (optional)</Label>
+                <Label>{t('Notes (optional)', 'नोट्स (वैकल्पिक)')}</Label>
                 <Textarea
-                  placeholder="Any thoughts about this session..."
+                  placeholder={t('Any thoughts about this session...', 'इस सत्र के बारे में कोई विचार...')}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
@@ -151,9 +153,9 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowFeedback(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setShowFeedback(false)}>{t('Cancel', 'रद्द करें')}</Button>
               <Button onClick={submitFeedback} disabled={loading}>
-                {loading ? 'Saving...' : 'Save Feedback'}
+                {loading ? t('Saving...', 'सेव हो रहा है...') : t('Save Feedback', 'प्रतिक्रिया सेव करें')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -177,17 +179,19 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
             </div>
           </div>
           <Badge variant="outline" className="capitalize">
-            {session.session_type}
+            {session.session_type === 'study' ? t('Study', 'अध्ययन') : 
+             session.session_type === 'revision' ? t('Revision', 'पुनरावृत्ति') : 
+             t('Buffer', 'बफर')}
           </Badge>
         </div>
 
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
           <span className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            {session.scheduled_time || 'Flexible'}
+            {session.scheduled_time || t('Flexible', 'लचीला')}
           </span>
-          <span>{session.duration_minutes} mins</span>
-          <span>Difficulty: {session.difficulty}/5</span>
+          <span>{session.duration_minutes} {t('mins', 'मिनट')}</span>
+          <span>{t('Difficulty', 'कठिनाई')}: {session.difficulty}/5</span>
         </div>
 
         {session.status === 'pending' ? (
@@ -198,28 +202,30 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
               onClick={() => handleStatusClick('completed')}
             >
               <Check className="h-4 w-4 mr-1" />
-              Completed
+              {t('Completed', 'पूर्ण')}
             </Button>
             <Button 
               size="sm" 
               variant="outline"
               onClick={() => handleStatusClick('partial')}
             >
-              Partial
+              {t('Partial', 'आंशिक')}
             </Button>
             <Button 
               size="sm" 
               variant="ghost"
               onClick={() => handleStatusClick('skipped')}
             >
-              Skip
+              {t('Skip', 'छोड़ें')}
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <StatusIcon className={`h-4 w-4 ${status.color}`} />
             <span className={`text-sm font-medium capitalize ${status.color}`}>
-              {session.status}
+              {session.status === 'completed' ? t('Completed', 'पूर्ण') : 
+               session.status === 'partial' ? t('Partial', 'आंशिक') : 
+               t('Skipped', 'छोड़ा')}
             </span>
             {session.effectiveness_score && (
               <div className="flex items-center gap-1 ml-auto">
@@ -235,14 +241,14 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
       <Dialog open={showFeedback} onOpenChange={setShowFeedback}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Session Feedback</DialogTitle>
+            <DialogTitle>{t('Session Feedback', 'सत्र प्रतिक्रिया')}</DialogTitle>
             <DialogDescription>
               {session.subject}: {session.topic}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>How did it go?</Label>
+              <Label>{t('How did it go?', 'कैसा रहा?')}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {(['completed', 'partial', 'skipped'] as const).map((s) => (
                   <Button
@@ -254,14 +260,14 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
                     {s === 'completed' && '✅ '}
                     {s === 'partial' && '⚠️ '}
                     {s === 'skipped' && '❌ '}
-                    {s}
+                    {s === 'completed' ? t('Completed', 'पूर्ण') : s === 'partial' ? t('Partial', 'आंशिक') : t('Skipped', 'छोड़ा')}
                   </Button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Effectiveness (1-5)</Label>
+              <Label>{t('Effectiveness (1-5)', 'प्रभावशीलता (1-5)')}</Label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Button
@@ -282,9 +288,9 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
             </div>
 
             <div className="space-y-2">
-              <Label>Notes (optional)</Label>
+              <Label>{t('Notes (optional)', 'नोट्स (वैकल्पिक)')}</Label>
               <Textarea
-                placeholder="Any thoughts about this session..."
+                placeholder={t('Any thoughts about this session...', 'इस सत्र के बारे में कोई विचार...')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
@@ -292,9 +298,9 @@ export function SessionCard({ session, compact = false, onUpdateStatus }: Sessio
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowFeedback(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowFeedback(false)}>{t('Cancel', 'रद्द करें')}</Button>
             <Button onClick={submitFeedback} disabled={loading}>
-              {loading ? 'Saving...' : 'Save Feedback'}
+              {loading ? t('Saving...', 'सेव हो रहा है...') : t('Save Feedback', 'प्रतिक्रिया सेव करें')}
             </Button>
           </DialogFooter>
         </DialogContent>

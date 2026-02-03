@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { useStudyPlanner } from '@/hooks/useStudyPlanner';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { WeaknessManager } from '@/components/planner/WeaknessManager';
 import { PreferencesForm } from '@/components/planner/PreferencesForm';
 import { WeeklyCalendar } from '@/components/planner/WeeklyCalendar';
 import { TodaySessions } from '@/components/planner/TodaySessions';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,6 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function StudyPlanner() {
+  const { t } = useLanguage();
   const {
     weaknesses,
     preferences,
@@ -67,17 +70,18 @@ export default function StudyPlanner() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center">
                 <Calendar className="h-5 w-5 text-white" />
               </div>
-              Study Planner
+              {t('Study Planner', 'अध्ययन योजनाकार')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Your personalized AI-powered study schedule
+              {t('Your personalized AI-powered study schedule', 'आपका व्यक्तिगत AI-संचालित अध्ययन कार्यक्रम')}
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <LanguageToggle />
             {hasPlan && (
               <Badge variant="outline" className="gap-1 py-1">
                 <TrendingUp className="h-3 w-3" />
-                {sessions.filter(s => s.status === 'completed').length}/{sessions.length} sessions
+                {sessions.filter(s => s.status === 'completed').length}/{sessions.length} {t('sessions', 'सत्र')}
               </Badge>
             )}
             <Button
@@ -88,17 +92,17 @@ export default function StudyPlanner() {
               {generating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating...
+                  {t('Generating...', 'बना रहे हैं...')}
                 </>
               ) : hasPlan ? (
                 <>
                   <RefreshCw className="h-4 w-4" />
-                  Regenerate Plan
+                  {t('Regenerate Plan', 'योजना पुनः बनाएं')}
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Generate Plan
+                  {t('Generate Plan', 'योजना बनाएं')}
                 </>
               )}
             </Button>
@@ -116,7 +120,7 @@ export default function StudyPlanner() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{sessions.filter(s => s.session_type === 'study').length}</p>
-                    <p className="text-xs text-muted-foreground">Study Sessions</p>
+                    <p className="text-xs text-muted-foreground">{t('Study Sessions', 'अध्ययन सत्र')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -129,7 +133,7 @@ export default function StudyPlanner() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{sessions.filter(s => s.session_type === 'revision').length}</p>
-                    <p className="text-xs text-muted-foreground">Revisions</p>
+                    <p className="text-xs text-muted-foreground">{t('Revisions', 'पुनरावृत्ति')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -142,7 +146,7 @@ export default function StudyPlanner() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{weaknesses.length}</p>
-                    <p className="text-xs text-muted-foreground">Focus Areas</p>
+                    <p className="text-xs text-muted-foreground">{t('Focus Areas', 'फोकस क्षेत्र')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -154,8 +158,8 @@ export default function StudyPlanner() {
                     <Brain className="h-5 w-5 text-cyan-500" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{Math.round((currentPlan?.total_planned_minutes || 0) / 60)}h</p>
-                    <p className="text-xs text-muted-foreground">Planned Time</p>
+                    <p className="text-2xl font-bold">{Math.round((currentPlan?.total_planned_minutes || 0) / 60)}{t('h', 'घं')}</p>
+                    <p className="text-xs text-muted-foreground">{t('Planned Time', 'नियोजित समय')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -168,15 +172,15 @@ export default function StudyPlanner() {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="today" className="gap-2">
               <Calendar className="h-4 w-4" />
-              Today
+              {t('Today', 'आज')}
             </TabsTrigger>
             <TabsTrigger value="week" className="gap-2">
               <BookOpen className="h-4 w-4" />
-              Weekly View
+              {t('Weekly View', 'साप्ताहिक दृश्य')}
             </TabsTrigger>
             <TabsTrigger value="setup" className="gap-2">
               <Settings className="h-4 w-4" />
-              Setup
+              {t('Setup', 'सेटअप')}
             </TabsTrigger>
           </TabsList>
 
@@ -194,7 +198,7 @@ export default function StudyPlanner() {
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Brain className="h-4 w-4 text-primary" />
-                        AI Insights
+                        {t('AI Insights', 'AI अंतर्दृष्टि')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -240,10 +244,10 @@ export default function StudyPlanner() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
-                    Getting Started
+                    {t('Getting Started', 'शुरू करें')}
                   </CardTitle>
                   <CardDescription>
-                    Follow these steps to create your personalized study plan
+                    {t('Follow these steps to create your personalized study plan', 'अपनी व्यक्तिगत अध्ययन योजना बनाने के लिए इन चरणों का पालन करें')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -253,10 +257,10 @@ export default function StudyPlanner() {
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${hasWeaknesses ? 'bg-success text-white' : 'bg-muted'}`}>
                           {hasWeaknesses ? '✓' : '1'}
                         </div>
-                        <span className="font-medium">Add Topics</span>
+                        <span className="font-medium">{t('Add Topics', 'विषय जोड़ें')}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Add subjects and topics you want to focus on
+                        {t('Add subjects and topics you want to focus on', 'उन विषयों और टॉपिक्स को जोड़ें जिन पर आप ध्यान देना चाहते हैं')}
                       </p>
                     </div>
                     <div className={`p-4 rounded-xl border ${preferences ? 'border-success bg-success/5' : 'border-border'}`}>
@@ -264,10 +268,10 @@ export default function StudyPlanner() {
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${preferences ? 'bg-success text-white' : 'bg-muted'}`}>
                           {preferences ? '✓' : '2'}
                         </div>
-                        <span className="font-medium">Set Preferences</span>
+                        <span className="font-medium">{t('Set Preferences', 'प्राथमिकताएं सेट करें')}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Configure your learning pace and schedule
+                        {t('Configure your learning pace and schedule', 'अपनी सीखने की गति और कार्यक्रम कॉन्फ़िगर करें')}
                       </p>
                     </div>
                     <div className="p-4 rounded-xl border border-border">
@@ -275,10 +279,10 @@ export default function StudyPlanner() {
                         <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-muted">
                           3
                         </div>
-                        <span className="font-medium">Generate Plan</span>
+                        <span className="font-medium">{t('Generate Plan', 'योजना बनाएं')}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Click the button above to create your plan
+                        {t('Click the button above to create your plan', 'अपनी योजना बनाने के लिए ऊपर बटन क्लिक करें')}
                       </p>
                     </div>
                   </div>
